@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import api from "@/lib/axios";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useState, useRef } from "react";
+import Image from "next/image";
 
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_DURATION_MS = 60 * 1000; // 1 menit
@@ -93,9 +94,14 @@ export default function LoginPage() {
 
       <Card className="shadow-2xl">
         <CardHeader className="space-y-2 text-center pb-4">
-          <div className="mx-auto w-16 h-16 bg-primary rounded-xl flex items-center justify-center mb-2">
-            <span className="text-white font-bold text-xl">BP</span>
-          </div>
+          <Image
+            src="/icons/logo.png"
+            alt="Logo Pemerintah Provinsi Jambi"
+            width={64}
+            height={64}
+            priority
+            className="mx-auto mb-2 h-16 w-16 object-contain"
+          />
           <CardTitle className="text-2xl font-bold text-primary">BAPENDA Jambi</CardTitle>
           <CardDescription>Masuk ke sistem manajemen konten</CardDescription>
         </CardHeader>
