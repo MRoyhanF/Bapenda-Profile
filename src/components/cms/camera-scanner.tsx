@@ -361,6 +361,36 @@ export function CameraScanner({ onDetected }: CameraScannerProps) {
     }
   };
 
+  // Kirim frame ke API deteksi plat
+  const detectPlateViaApi = async (
+    canvas: HTMLCanvasElement
+  ): Promise<string | null> => {
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, "image/jpeg", 0.9)
+    );
+    if (!blob) return null;
+
+    const form = new FormData();
+    form.append("image", blob, "capture.jpg");
+
+    try {
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_PLATE_API_URL ??
+          "http://localhost:5000/api/detect-plate",
+        { method: "POST", body: form }
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      setOcrDebug(`${json.plate_number ?? "-"} (${json.confidence ?? 0})`);
+      if (json.status !== "success" || !json.plate_number) return null;
+      return String(json.plate_number).toUpperCase().trim();
+    } catch (err) {
+      console.error("[PlateAPI] Error:", err);
+      toast.error("API deteksi plat tidak terjangkau");
+      return null;
+    }
+  };
+
   // Manual capture
   const handleCapture = async () => {
     const video = videoRef.current;
@@ -385,7 +415,7 @@ export function CameraScanner({ onDetected }: CameraScannerProps) {
     cleanup();
     setMode("processing");
 
-    const plate = await ocrOnCanvas(canvas);
+    const plate = await detectPlateViaApi(canvas);
     if (plate) {
       setDetectedPlate(plate);
       setMode("detected");

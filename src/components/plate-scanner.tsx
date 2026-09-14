@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Camera, Loader2, RotateCcw, Check, X, AlertCircle } from "lucide-react";
 
 const PLATE_API =
-  process.env.NEXT_PUBLIC_PLATE_API_URL ?? "http://localhost:5000/api/detect-plate";
+  process.env.NEXT_PUBLIC_PLATE_API_URL ?? "http://localhost:5051/api/detect-plate";
 
 type Mode = "scanning" | "review";
 
@@ -15,8 +15,6 @@ interface PlateScannerProps {
   onConfirm: (plate: string) => void;
 }
 
-const MIN_CONFIDENCE = 0.3;
-const SCAN_INTERVAL_MS = 1200;
 const MAX_WIDTH = 1024;
 
 interface DetectResponse {
@@ -65,7 +63,6 @@ export function PlateScanner({ open, onClose, onConfirm }: PlateScannerProps) {
   const busyRef = useRef(false);
   const modeRef = useRef<Mode>("scanning");
   const abortRef = useRef(false);
-  const attemptRef = useRef(0);
 
   const stopStream = useCallback(() => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -85,56 +82,45 @@ export function PlateScanner({ open, onClose, onConfirm }: PlateScannerProps) {
     [stopStream]
   );
 
-  /** Ambil frame sekarang, kirim ke API OCR. auto=true → diamkan frame gagal. */
-  const capture = useCallback(
-    async (auto: boolean) => {
-      const video = videoRef.current;
-      if (!video || busyRef.current || modeRef.current === "review") return;
-      const frame = await grabFrame(video);
-      if (!frame) return;
+  /** Ambil frame sekarang, kirim ke API OCR, lalu tampilkan hasil untuk direview. */
+  const capture = useCallback(async () => {
+    const video = videoRef.current;
+    setStatus(`Tombol ditekan → ${PLATE_API}`);
+    if (!video || busyRef.current || modeRef.current === "review") {
+      setError(`Capture dilewati (video=${!!video} busy=${busyRef.current} mode=${modeRef.current})`);
+      return;
+    }
+    const frame = await grabFrame(video);
+    if (!frame) {
+      setError(`Kamera belum siap (videoWidth=${video.videoWidth}). Tunggu gambar muncul lalu coba lagi.`);
+      return;
+    }
 
-      busyRef.current = true;
-      setBusy(true);
-      try {
-        const result = await detectPlate(frame.blob);
-        const conf = result.confidence ?? 0;
-        const ok = result.status === "success" && !!result.plate_number;
-
-        if (ok && (!auto || conf >= MIN_CONFIDENCE)) {
-          goReview(frame.dataUrl, result.plate_number!, conf, "");
-          return;
-        }
-
-        if (auto) {
-          attemptRef.current += 1;
-          setStatus(
-            ok
-              ? `Akurasi rendah (${(conf * 100).toFixed(0)}%), mencoba lagi... [${attemptRef.current}]`
-              : `Plat belum terbaca, mencoba lagi... [${attemptRef.current}]`
-          );
-          return;
-        }
-
-        goReview(
-          frame.dataUrl,
-          result.plate_number ?? "",
-          result.confidence ?? null,
-          result.message ?? "Plat tidak terbaca. Silakan ketik manual."
-        );
-      } catch (err) {
-        const msg =
-          err instanceof TypeError
-            ? `Tidak bisa menghubungi ${PLATE_API}. Pastikan service jalan & mengizinkan CORS.`
-            : `Deteksi gagal: ${err instanceof Error ? err.message : String(err)}`;
-        setError(msg);
-        setStatus("");
-      } finally {
-        busyRef.current = false;
-        setBusy(false);
-      }
-    },
-    [goReview]
-  );
+    setError("");
+    setStatus(`Mengirim ${(frame.blob.size / 1024).toFixed(0)} KB ke ${PLATE_API}...`);
+    busyRef.current = true;
+    setBusy(true);
+    try {
+      const result = await detectPlate(frame.blob);
+      const ok = result.status === "success" && !!result.plate_number;
+      goReview(
+        frame.dataUrl,
+        result.plate_number ?? "",
+        result.confidence ?? null,
+        ok ? "" : result.message ?? "Plat tidak terbaca. Silakan ketik manual."
+      );
+    } catch (err) {
+      const msg =
+        err instanceof TypeError
+          ? `Tidak bisa menghubungi ${PLATE_API}. Pastikan service jalan & mengizinkan CORS.`
+          : `Deteksi gagal: ${err instanceof Error ? err.message : String(err)}`;
+      setError(msg);
+      setStatus("");
+    } finally {
+      busyRef.current = false;
+      setBusy(false);
+    }
+  }, [goReview]);
 
   const startCamera = useCallback(async () => {
     setError("");
@@ -161,11 +147,10 @@ export function PlateScanner({ open, onClose, onConfirm }: PlateScannerProps) {
     }
   }, []);
 
-  // Buka: nyalakan kamera + loop auto-capture sampai plat terbaca / modal ditutup.
+  // Buka: nyalakan kamera. Deteksi hanya jalan saat tombol capture ditekan.
   useEffect(() => {
     if (!open) return;
     abortRef.current = false;
-    attemptRef.current = 0;
     busyRef.current = false;
     modeRef.current = "scanning";
     setMode("scanning");
@@ -174,19 +159,10 @@ export function PlateScanner({ open, onClose, onConfirm }: PlateScannerProps) {
     setConfidence(null);
     setError("");
 
-    let timer: ReturnType<typeof setTimeout>;
-    const loop = async () => {
-      if (abortRef.current) return;
-      if (modeRef.current === "scanning" && streamRef.current) await capture(true);
-      if (!abortRef.current) timer = setTimeout(loop, SCAN_INTERVAL_MS);
-    };
-    startCamera().then(() => {
-      timer = setTimeout(loop, SCAN_INTERVAL_MS);
-    });
+    startCamera();
 
     return () => {
       abortRef.current = true;
-      clearTimeout(timer);
       stopStream();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -199,7 +175,6 @@ export function PlateScanner({ open, onClose, onConfirm }: PlateScannerProps) {
   };
 
   const handleRetake = async () => {
-    attemptRef.current = 0;
     modeRef.current = "scanning";
     setMode("scanning");
     setSnapshot("");
@@ -244,7 +219,7 @@ export function PlateScanner({ open, onClose, onConfirm }: PlateScannerProps) {
                 <div className="w-3/4 h-1/4 border-2 border-white/80 rounded-lg shadow-[0_0_0_9999px_rgba(0,0,0,0.35)]" />
               </div>
               <div className="absolute bottom-2 left-0 right-0 px-3 text-center text-[11px] text-white/90">
-                {busy ? "Memproses gambar..." : status}
+                {status}
               </div>
             </>
           )}
@@ -260,7 +235,7 @@ export function PlateScanner({ open, onClose, onConfirm }: PlateScannerProps) {
 
           {mode === "scanning" ? (
             <button
-              onClick={() => capture(false)}
+              onClick={() => capture()}
               disabled={busy}
               className="w-full py-3 rounded-xl bg-primary text-white text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
             >
