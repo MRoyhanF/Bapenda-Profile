@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   AlertCircle,
   RotateCcw,
+  SwitchCamera,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -34,6 +35,7 @@ export function CameraScanner({ onDetected }: CameraScannerProps) {
   const [isScanning, setIsScanning] = useState(false);
   const [scanCount, setScanCount] = useState(0);
   const [ocrDebug, setOcrDebug] = useState("");
+  const [facing, setFacing] = useState<"environment" | "user">("environment");
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -103,7 +105,7 @@ export function CameraScanner({ onDetected }: CameraScannerProps) {
 
   // Start camera
   const startCamera = useCallback(
-    async (deviceId?: string) => {
+    async (deviceId?: string, facingOverride?: "environment" | "user") => {
       cleanup();
       await new Promise((r) => setTimeout(r, 500));
 
@@ -123,10 +125,17 @@ export function CameraScanner({ onDetected }: CameraScannerProps) {
       if (!targetVideo) return;
 
       const useDevice = deviceId || selectedDevice;
+      // Di HP label device sering kosong/ambigu, jadi pemilihan depan-belakang
+      // pakai facingMode; deviceId dipertahankan untuk desktop multi-webcam.
+      const useFacing = facingOverride ?? facing;
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: useDevice ? { deviceId: { exact: useDevice } } : true,
+          video: isMobile
+            ? { facingMode: { ideal: useFacing }, width: { ideal: 1280 } }
+            : useDevice
+              ? { deviceId: { exact: useDevice } }
+              : true,
           audio: false,
         });
         streamRef.current = stream;
@@ -164,7 +173,7 @@ export function CameraScanner({ onDetected }: CameraScannerProps) {
         toast.error(`Kamera gagal: ${err.message}`);
       }
     },
-    [selectedDevice, cleanup]
+    [selectedDevice, cleanup, facing, isMobile]
   );
 
   // Scanning loop
@@ -455,6 +464,15 @@ export function CameraScanner({ onDetected }: CameraScannerProps) {
     await startCamera(deviceId);
   };
 
+  // Balik kamera depan/belakang (mobile)
+  const handleFlipFacing = async () => {
+    const next = facing === "environment" ? "user" : "environment";
+    setFacing(next);
+    setScanCount(0);
+    setOcrDebug("");
+    await startCamera(undefined, next);
+  };
+
   // Retake - FIXED: go back to preview mode first
   const handleRetake = () => {
     console.log("[Camera] Retake");
@@ -483,6 +501,7 @@ export function CameraScanner({ onDetected }: CameraScannerProps) {
     setErrorMessage("");
     setScanCount(0);
     setOcrDebug("");
+    setFacing("environment");
     await new Promise((r) => setTimeout(r, 300));
     await listCameras();
   };
@@ -586,6 +605,20 @@ export function CameraScanner({ onDetected }: CameraScannerProps) {
                     style={{ display: "block", width: "100%", height: "auto", minHeight: "250px", background: "#000" }}
                   />
                   <canvas ref={canvasRef} style={{ display: "none" }} />
+
+                  {/* Flip kamera (mobile) */}
+                  {isMobile && mode === "preview" && (
+                    <button
+                      type="button"
+                      onClick={handleFlipFacing}
+                      className="absolute top-2 right-2 p-2 rounded-full bg-black/60 text-white"
+                      aria-label={
+                        facing === "environment" ? "Pakai kamera depan" : "Pakai kamera belakang"
+                      }
+                    >
+                      <SwitchCamera className="h-4 w-4" />
+                    </button>
+                  )}
 
                   {/* Scan indicator */}
                   {mode === "preview" && isScanning && (
