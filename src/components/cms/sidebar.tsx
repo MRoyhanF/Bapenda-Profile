@@ -43,9 +43,13 @@ export function CmsSidebar() {
   const { isOpen, toggle } = useSidebarStore();
   const { user } = useAuthStore();
 
+  console.log("Current user:", user);
+
   const visibleItems = NAV_ITEMS.filter(
     (item) => !item.roles || (user?.role && item.roles.includes(user.role as Role))
   );
+
+  console.log("Visible items:", visibleItems.map(item => item.label));
 
   return (
     <aside
