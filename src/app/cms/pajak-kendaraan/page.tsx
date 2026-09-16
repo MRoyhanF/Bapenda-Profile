@@ -573,6 +573,29 @@ function CekPajakPage() {
                 isLoading={isLoading || isSearching}
                 emptyMessage="Belum ada data pengecekan"
                 skeletonRows={pageSize}
+                mobileCard={(log) => (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono font-bold">{log.licensePlate.toUpperCase()}</span>
+                      <Badge variant={log.status === "Lunas" ? "success" : "destructive"}>
+                        {log.status === "Lunas" ? (
+                          <CheckCircle2 className="mr-1 h-3 w-3" />
+                        ) : (
+                          <XCircle className="mr-1 h-3 w-3" />
+                        )}
+                        {log.status}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <MapPin className="h-3 w-3 flex-shrink-0" />
+                      {log.lokasi ?? "-"}
+                    </p>
+                    {log.notes && (
+                      <p className="text-xs text-muted-foreground line-clamp-2">{log.notes}</p>
+                    )}
+                    <p className="text-[11px] text-muted-foreground">{formatDateTime(log.createdAt)}</p>
+                  </div>
+                )}
               />
 
               {/* Pagination */}

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins, Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
@@ -37,6 +37,20 @@ export const metadata: Metadata = {
     url: process.env.NEXT_PUBLIC_APP_URL,
     siteName: "BAPENDA Provinsi Jambi",
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "CMS BAPENDA",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // Standalone PWA: cegah zoom-bounce saat tap input di iOS.
+  maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: "#1a3a6e",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

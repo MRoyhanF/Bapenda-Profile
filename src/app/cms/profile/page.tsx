@@ -9,17 +9,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store";
+import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateUserSchema, changePasswordSchema, UpdateUserInput, ChangePasswordInput } from "@/lib/validations";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, LogOut } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function CmsProfilePage() {
-  const { user: storeUser, setUser } = useAuthStore();
+  const { user: storeUser, setUser, clearUser } = useAuthStore();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
@@ -60,6 +62,17 @@ export default function CmsProfilePage() {
     onSuccess: () => { passwordForm.reset(); toast.success("Password berhasil diubah"); },
     onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal mengubah password"),
   });
+
+  async function handleLogout() {
+    try {
+      await api.post("/auth/logout");
+      toast.success("Berhasil logout");
+    } catch {
+      // Sesi lokal tetap dibersihkan walau request gagal.
+    }
+    clearUser();
+    router.push("/cms/login");
+  }
 
   if (isLoading) return (
     <div className="space-y-4 max-w-2xl">
@@ -175,6 +188,17 @@ export default function CmsProfilePage() {
           </form>
         </CardContent>
       </Card>
+
+      {/* Logout: satu-satunya jalan keluar untuk role tanpa menu lain (mis. Petugas). */}
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 md:w-auto"
+        onClick={handleLogout}
+      >
+        <LogOut className="mr-2 h-4 w-4" />
+        Logout
+      </Button>
     </div>
   );
 }

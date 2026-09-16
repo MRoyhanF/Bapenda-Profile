@@ -32,7 +32,7 @@ export function CmsHeader() {
   }
 
   return (
-    <header className="h-16 border-b bg-white flex items-center justify-between px-4 sticky top-0 z-30">
+    <header className="hidden md:flex h-16 border-b bg-white items-center justify-between px-4 sticky top-0 z-30">
       <Button variant="ghost" size="icon" onClick={toggle} aria-label="Toggle menu">
         <Menu className="h-5 w-5" />
       </Button>

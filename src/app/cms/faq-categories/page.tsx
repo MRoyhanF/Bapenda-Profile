@@ -218,7 +218,7 @@ function CmsFaqCategoriesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-primary">Kategori FAQ</h1>
           <p className="text-sm text-muted-foreground">Kelola kategori untuk pertanyaan yang sering diajukan</p>

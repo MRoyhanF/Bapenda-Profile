@@ -5,56 +5,22 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSidebarStore, useAuthStore } from "@/store";
-import {
-  LayoutDashboard, Newspaper, Images, HelpCircle, FileText,
-  Shield, Image, Settings, Users, Building2, ChevronLeft, ChevronRight,
-  User, ScrollText, Tag, Car, ClipboardList,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import NextImage from "next/image";
-import { Role } from "@prisma/client";
-
-interface NavItem {
-  href: string;
-  label: string;
-  icon: React.ElementType;
-  roles?: Role[];
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { href: "/cms/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/cms/news", label: "Berita", icon: Newspaper, roles: ["Super_Admin", "Admin", "Editor", "Ketua_Uptd", "Admin_Uptd"] },
-  { href: "/cms/news-categories", label: "Kategori Berita", icon: Tag, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/galleries", label: "Galeri", icon: Images, roles: ["Super_Admin", "Admin", "Editor", "Ketua_Uptd", "Admin_Uptd"] },
-  { href: "/cms/faqs", label: "FAQ", icon: HelpCircle, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/faq-categories", label: "Kategori FAQ", icon: ScrollText, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/pages", label: "Halaman", icon: FileText, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/regulations", label: "Regulasi", icon: Shield, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/banners", label: "Banner", icon: Image, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/uptd", label: "UPTD", icon: Building2, roles: ["Super_Admin"] },
-  { href: "/cms/users", label: "Pengguna", icon: Users, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/pajak-kendaraan", label: "Cek Pajak", icon: Car, roles: ["Petugas"] },
-  { href: "/cms/log-pajak", label: "Log Cek Pajak", icon: ClipboardList, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/settings", label: "Pengaturan", icon: Settings, roles: ["Super_Admin"] },
-  { href: "/cms/profile", label: "Profil Saya", icon: User },
-];
+import { visibleNavItems, isNavActive } from "@/components/cms/nav-items";
 
 export function CmsSidebar() {
   const pathname = usePathname();
   const { isOpen, toggle } = useSidebarStore();
   const { user } = useAuthStore();
 
-  console.log("Current user:", user);
-
-  const visibleItems = NAV_ITEMS.filter(
-    (item) => !item.roles || (user?.role && item.roles.includes(user.role as Role))
-  );
-
-  console.log("Visible items:", visibleItems.map(item => item.label));
+  const visibleItems = visibleNavItems(user?.role);
 
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 z-40 h-screen bg-primary text-white transition-all duration-300",
+        // Desktop-only: di mobile navigasi ditangani bottom bar + drawer.
+        "hidden md:block fixed left-0 top-0 z-40 h-screen bg-primary text-white transition-all duration-300",
         isOpen ? "w-64" : "w-16"
       )}
     >
@@ -110,7 +76,7 @@ export function CmsSidebar() {
         <nav className="p-3 space-y-1">
           {visibleItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+            const isActive = isNavActive(pathname, item.href);
             return (
               <Link
                 key={item.href}

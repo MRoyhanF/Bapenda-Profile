@@ -34,7 +34,7 @@ export function DataTablePagination({
   return (
     <div className="flex items-center justify-between px-1 flex-wrap gap-3">
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <span>Tampilkan</span>
+        <span className="hidden sm:inline">Tampilkan</span>
         <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
           <SelectTrigger className="w-[70px] h-8">
             <SelectValue />
@@ -47,7 +47,8 @@ export function DataTablePagination({
             ))}
           </SelectContent>
         </Select>
-        <span>data — menampilkan {from}–{to} dari {totalItems}</span>
+        <span className="hidden sm:inline">data — menampilkan {from}–{to} dari {totalItems}</span>
+        <span className="sm:hidden">{from}–{to} / {totalItems}</span>
       </div>
 
       <div className="flex items-center gap-1">

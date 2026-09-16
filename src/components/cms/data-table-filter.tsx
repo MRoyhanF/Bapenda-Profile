@@ -44,7 +44,7 @@ export function DataTableFilter({
   return (
     <div className="flex items-center gap-2 flex-wrap">
       {/* Search input */}
-      <div className="relative flex-1 min-w-[200px] max-w-sm">
+      <div className="relative w-full sm:flex-1 sm:w-auto sm:min-w-[200px] sm:max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           value={value}

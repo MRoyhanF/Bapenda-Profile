@@ -36,14 +36,14 @@ function StatCard({ title, value, icon: Icon, sub, color }: {
 }) {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 max-sm:p-4 max-sm:pb-1">
+        <CardTitle className="text-sm font-medium text-muted-foreground max-sm:text-xs">{title}</CardTitle>
         <div className={`p-2 rounded-md ${color}`}>
           <Icon className="h-4 w-4 text-white" />
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="text-3xl font-bold text-primary">{value}</div>
+      <CardContent className="max-sm:p-4 max-sm:pt-0">
+        <div className="text-3xl font-bold text-primary max-sm:text-2xl">{value}</div>
         {sub && <p className="text-xs text-muted-foreground mt-1">{sub}</p>}
       </CardContent>
     </Card>
@@ -123,7 +123,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
         <StatCard title="Total Berita" value={stats?.counts?.news ?? 0} icon={Newspaper} color="bg-blue-500" sub="Semua status" />
         <StatCard title="Total Galeri" value={stats?.counts?.gallery ?? 0} icon={Images} color="bg-purple-500" sub="Semua status" />
         <StatCard title="Total FAQ" value={stats?.counts?.faq ?? 0} icon={HelpCircle} color="bg-green-500" sub="Semua pertanyaan" />
