@@ -34,6 +34,14 @@ interface PajakData {
   };
 }
 
+interface JRData {
+  total_tarif: { total: number };
+}
+
+interface PNBPData {
+  pnbp: { total: string };
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function normalizeNopol(raw: string): string {
@@ -139,8 +147,13 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
         grandTotal: "0",
       };
     } else {
-      // Tagihan sudah muncul, cek detail pajak
-      const pajak = await pkbFetch<PajakData>("pajak-detail", nopol);
+      // Tagihan sudah muncul — samakan dengan /layanan/stage/cek-pkb:
+      // grand total = PKB (pokok+denda+opsen) + Jasa Raharja + PNBP.
+      const [pajak, jr, pnbp] = await Promise.all([
+        pkbFetch<PajakData>("pajak-detail", nopol),
+        pkbFetch<JRData>("jr-detail", nopol),
+        pkbFetch<PNBPData>("kendaraan-pnbp", nopol),
+      ]);
 
       if (!pajak || isSudahBayar(pajak)) {
         status = "Lunas";
@@ -151,11 +164,15 @@ export const POST = withErrorHandler(async (request: NextRequest) => {
           bulanTelat: pajak?.jarak.bulan,
         };
       } else {
+        const totalPkb = parseRupiah(pajak.tagihan.total.grand_total);
+        const totalJr = jr?.total_tarif.total ?? 0;
+        const totalPnbp = parseRupiah(pnbp?.pnbp.total);
+
         status = "Belum Lunas";
         tagihanInfo = {
           terakhirBayar: pajak.terakhir_bayar,
           jatuhTempo: kendaraan.tg_akhir_pkb,
-          grandTotal: pajak.tagihan.total.grand_total,
+          grandTotal: String(totalPkb + totalJr + totalPnbp),
           tahunTelat: pajak.jarak.tahun,
           bulanTelat: pajak.jarak.bulan,
         };
