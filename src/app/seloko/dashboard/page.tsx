@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Newspaper, Images, HelpCircle, Clock, Users, TrendingUp, Eye } from "lucide-react";
 import { useAuthStore } from "@/store";
 import { formatDate } from "@/lib/utils";
+import { useMounted } from "@/hooks/use-mounted";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend, LineChart, Line, CartesianGrid,
@@ -64,15 +65,20 @@ export default function DashboardPage() {
     queryFn: () => api.get("/seloko/dashboard/stats").then((r) => r.data.data),
   });
 
+  // Sapaan, tanggal, dan nama user bergantung jam/locale/localStorage klien —
+  // render hanya setelah mounted supaya identik dengan HTML server.
+  const mounted = useMounted();
   const currentHour = new Date().getHours();
   const greeting = currentHour < 12 ? "Selamat Pagi" : currentHour < 17 ? "Selamat Siang" : "Selamat Malam";
+  const hello = mounted ? `${greeting}, ${user?.name?.split(" ")[0] ?? ""}` : "";
+  const today = mounted ? formatDate(new Date()) : "";
 
   if (isLoading) {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-primary">{greeting}, {user?.name?.split(" ")[0]}</h1>
-          <p className="text-muted-foreground text-sm mt-1">{formatDate(new Date())} — Memuat data...</p>
+          <h1 className="text-2xl font-bold text-primary">{hello}</h1>
+          <p className="text-muted-foreground text-sm mt-1">{today} — Memuat data...</p>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
@@ -115,10 +121,10 @@ export default function DashboardPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-primary">
-          {greeting}, {user?.name?.split(" ")[0]} 👋
+          {hello} 👋
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
-          {formatDate(new Date())} — Selamat datang di Seloko BAPENDA Provinsi Jambi
+          {today} — Selamat datang di Seloko BAPENDA Provinsi Jambi
         </p>
       </div>
 

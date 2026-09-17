@@ -7,12 +7,11 @@ import { MobileTopBar, MobileTabBar } from "@/components/seloko/mobile-nav";
 import { PwaProvider } from "@/components/seloko/pwa-provider";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useMounted } from "@/hooks/use-mounted";
 
 export default function SelokoLayout({ children }: { children: React.ReactNode }) {
   const { isOpen } = useSidebarStore();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useMounted();
   const pathname = usePathname();
 
   const isAuthPage = pathname === "/seloko/login";

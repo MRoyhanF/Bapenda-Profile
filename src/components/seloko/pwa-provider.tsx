@@ -2,20 +2,49 @@
 
 import { useEffect, useState } from "react";
 import { Download, X, WifiOff } from "lucide-react";
-
-interface InstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
+import { useInstallStore, type InstallPromptEvent } from "@/store";
 
 const DISMISS_KEY = "seloko-install-dismissed";
+
+/** Deteksi aplikasi sudah berjalan sebagai PWA terpasang. */
+function isStandalone(): boolean {
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    // iOS Safari belum mendukung display-mode standalone.
+    (window.navigator as { standalone?: boolean }).standalone === true
+  );
+}
+
+/**
+ * Hook install PWA. Prompt disimpan di store supaya tombol di halaman Profil
+ * tetap berfungsi walau banner sudah ditutup.
+ */
+export function useInstallApp() {
+  const { event, setEvent } = useInstallStore();
+  const [installed, setInstalled] = useState(false);
+
+  useEffect(() => setInstalled(isStandalone()), []);
+
+  async function install() {
+    if (!event) return;
+    await event.prompt();
+    const { outcome } = await event.userChoice;
+    // Prompt hangus setelah dipakai — Chromium menolak prompt() kedua.
+    setEvent(null);
+    if (outcome === "accepted") setInstalled(true);
+  }
+
+  return { canInstall: !!event, installed, install };
+}
 
 /**
  * Daftarkan service worker + tawarkan install (Android/Chrome) dan
  * tampilkan banner saat offline. Hanya dipasang di area /seloko.
  */
 export function PwaProvider() {
-  const [installEvent, setInstallEvent] = useState<InstallPromptEvent | null>(null);
+  const setEvent = useInstallStore((s) => s.setEvent);
+  const { canInstall, install } = useInstallApp();
+  const [dismissed, setDismissed] = useState(true);
   const [offline, setOffline] = useState(false);
 
   useEffect(() => {
@@ -25,13 +54,14 @@ export function PwaProvider() {
       });
     }
 
+    setDismissed(localStorage.getItem(DISMISS_KEY) === "1");
+
     function onBeforeInstall(e: Event) {
       e.preventDefault();
-      if (localStorage.getItem(DISMISS_KEY) === "1") return;
-      setInstallEvent(e as InstallPromptEvent);
+      setEvent(e as InstallPromptEvent);
     }
     function onInstalled() {
-      setInstallEvent(null);
+      setEvent(null);
     }
     function syncOnline() {
       setOffline(!navigator.onLine);
@@ -48,18 +78,11 @@ export function PwaProvider() {
       window.removeEventListener("online", syncOnline);
       window.removeEventListener("offline", syncOnline);
     };
-  }, []);
-
-  async function handleInstall() {
-    if (!installEvent) return;
-    await installEvent.prompt();
-    await installEvent.userChoice;
-    setInstallEvent(null);
-  }
+  }, [setEvent]);
 
   function handleDismiss() {
     localStorage.setItem(DISMISS_KEY, "1");
-    setInstallEvent(null);
+    setDismissed(true);
   }
 
   return (
@@ -71,16 +94,16 @@ export function PwaProvider() {
         </div>
       )}
 
-      {installEvent && (
+      {canInstall && !dismissed && (
         <div className="md:hidden fixed inset-x-3 z-50 bottom-[calc(4.25rem+env(safe-area-inset-bottom))] bg-white border border-gray-200 rounded-2xl shadow-lg p-3 flex items-center gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/icons/icon-192.png" alt="" className="h-10 w-10 rounded-xl flex-shrink-0" />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold truncate">Pasang Seloko BAPENDA</p>
+            <p className="text-sm font-semibold truncate">Pasang SELOKO</p>
             <p className="text-xs text-muted-foreground">Akses lebih cepat langsung dari layar utama</p>
           </div>
           <button
-            onClick={handleInstall}
+            onClick={install}
             className="flex-shrink-0 bg-primary text-white text-xs font-semibold rounded-lg px-3 py-2 flex items-center gap-1.5"
           >
             <Download className="h-3.5 w-3.5" />

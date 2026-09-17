@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Seloko BAPENDA Provinsi Jambi",
-    short_name: "Seloko BAPENDA",
+    name: "SELOKO",
+    short_name: "SELOKO",
     description: "Aplikasi Seloko — pengelolaan konten dan cek pajak kendaraan BAPENDA Provinsi Jambi",
     start_url: "/seloko/dashboard",
     scope: "/seloko",

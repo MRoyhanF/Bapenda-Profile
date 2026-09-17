@@ -8,25 +8,30 @@ import { useSidebarStore, useAuthStore } from "@/store";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import NextImage from "next/image";
 import { visibleNavItems, isNavActive } from "@/components/seloko/nav-items";
+import { useMounted } from "@/hooks/use-mounted";
 
 export function SelokoSidebar() {
   const pathname = usePathname();
   const { isOpen, toggle } = useSidebarStore();
   const { user } = useAuthStore();
+  // Sidebar & auth dipersist di localStorage — tahan sampai mounted agar
+  // render pertama klien sama dengan HTML server.
+  const mounted = useMounted();
+  const expanded = mounted ? isOpen : true;
 
-  const visibleItems = visibleNavItems(user?.role);
+  const visibleItems = visibleNavItems(mounted ? user?.role : undefined);
 
   return (
     <aside
       className={cn(
         // Desktop-only: di mobile navigasi ditangani bottom bar + drawer.
         "hidden md:block fixed left-0 top-0 z-40 h-screen bg-primary text-white transition-all duration-300",
-        isOpen ? "w-64" : "w-16"
+        expanded ? "w-64" : "w-16"
       )}
     >
       {/* Logo */}
       <div className="flex h-16 items-center justify-between px-4 border-b border-primary-600">
-        {isOpen && (
+        {expanded && (
           <Link href="/seloko/dashboard" className="flex items-center gap-2 min-w-0">
             <NextImage
               src="/icons/logo.png"
@@ -38,7 +43,7 @@ export function SelokoSidebar() {
             <span className="text-sm font-semibold leading-tight truncate">Seloko</span>
           </Link>
         )}
-        {!isOpen && (
+        {!expanded && (
           <div className="mx-auto">
             <NextImage
               src="/icons/logo.png"
@@ -53,7 +58,7 @@ export function SelokoSidebar() {
           onClick={toggle}
           className={cn(
             "p-1 rounded-md hover:bg-primary-600 transition-colors flex-shrink-0",
-            !isOpen && "hidden"
+            !expanded && "hidden"
           )}
           aria-label="Toggle sidebar"
         >
@@ -62,7 +67,7 @@ export function SelokoSidebar() {
       </div>
 
       {/* Toggle when collapsed */}
-      {!isOpen && (
+      {!expanded && (
         <button
           onClick={toggle}
           className="absolute -right-3 top-20 bg-white border border-gray-200 rounded-full p-1 shadow-sm hover:shadow-md transition-shadow"
@@ -86,12 +91,12 @@ export function SelokoSidebar() {
                   isActive
                     ? "bg-white/20 text-white"
                     : "text-white/70 hover:bg-white/10 hover:text-white",
-                  !isOpen && "justify-center px-2"
+                  !expanded && "justify-center px-2"
                 )}
-                title={!isOpen ? item.label : undefined}
+                title={!expanded ? item.label : undefined}
               >
                 <Icon className="h-5 w-5 flex-shrink-0" />
-                {isOpen && <span className="truncate">{item.label}</span>}
+                {expanded && <span className="truncate">{item.label}</span>}
               </Link>
             );
           })}

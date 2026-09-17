@@ -13,11 +13,14 @@ import { toast } from "sonner";
 import api from "@/lib/axios";
 import { getInitials } from "@/lib/utils";
 import Link from "next/link";
+import { useMounted } from "@/hooks/use-mounted";
 
 export function SelokoHeader() {
   const { user, clearUser } = useAuthStore();
   const { toggle } = useSidebarStore();
   const router = useRouter();
+  // Auth dipersist di localStorage; sebelum mounted render tanpa user.
+  const u = useMounted() ? user : null;
 
   async function handleLogout() {
     try {
@@ -47,9 +50,9 @@ export function SelokoHeader() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0">
               <Avatar className="h-9 w-9">
-                <AvatarImage src={user?.avatarUrl || ""} alt={user?.name || ""} />
+                <AvatarImage src={u?.avatarUrl || ""} alt={u?.name || ""} />
                 <AvatarFallback className="bg-primary text-white text-xs">
-                  {user?.name ? getInitials(user.name) : "U"}
+                  {u?.name ? getInitials(u.name) : "U"}
                 </AvatarFallback>
               </Avatar>
             </Button>
@@ -57,9 +60,9 @@ export function SelokoHeader() {
           <DropdownMenuContent className="w-56" align="end">
             <DropdownMenuLabel>
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{user?.name}</p>
-                <p className="text-xs text-muted-foreground">{user?.email}</p>
-                <p className="text-xs text-muted-foreground capitalize">{user?.role?.replace("_", " ")}</p>
+                <p className="text-sm font-medium leading-none">{u?.name}</p>
+                <p className="text-xs text-muted-foreground">{u?.email}</p>
+                <p className="text-xs text-muted-foreground capitalize">{u?.role?.replace("_", " ")}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

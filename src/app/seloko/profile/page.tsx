@@ -16,8 +16,9 @@ import { updateUserSchema, changePasswordSchema, UpdateUserInput, ChangePassword
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
-import { Eye, EyeOff, LogOut } from "lucide-react";
+import { Eye, EyeOff, LogOut, Download, CheckCircle2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useInstallApp } from "@/components/seloko/pwa-provider";
 
 export default function SelokoProfilePage() {
   const { user: storeUser, setUser, clearUser } = useAuthStore();
@@ -26,6 +27,7 @@ export default function SelokoProfilePage() {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const { canInstall, installed, install } = useInstallApp();
 
   const { data: me, isLoading } = useQuery({
     queryKey: ["me"],
@@ -186,6 +188,31 @@ export default function SelokoProfilePage() {
               </Button>
             </div>
           </form>
+        </CardContent>
+      </Card>
+
+      {/* Install PWA: cadangan bila banner install sudah ditutup. */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">Aplikasi SELOKO</CardTitle></CardHeader>
+        <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted-foreground">
+            {installed
+              ? "Aplikasi sudah terpasang di perangkat ini."
+              : canInstall
+                ? "Pasang SELOKO agar bisa dibuka langsung dari layar utama."
+                : "Buka menu browser lalu pilih \u201cTambahkan ke layar utama\u201d untuk memasang aplikasi."}
+          </p>
+          {installed ? (
+            <span className="flex items-center gap-1.5 text-sm font-medium text-green-600">
+              <CheckCircle2 className="h-4 w-4" />
+              Terpasang
+            </span>
+          ) : (
+            <Button type="button" onClick={install} disabled={!canInstall} className="sm:w-auto">
+              <Download className="mr-2 h-4 w-4" />
+              Pasang Aplikasi
+            </Button>
+          )}
         </CardContent>
       </Card>
 

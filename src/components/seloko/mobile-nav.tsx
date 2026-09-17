@@ -10,20 +10,10 @@ import { ChevronLeft, MoreHorizontal, LogOut, ExternalLink, X } from "lucide-rea
 import { toast } from "sonner";
 import api from "@/lib/axios";
 import { visibleNavItems, isNavActive, type NavItem } from "@/components/seloko/nav-items";
+import { useMounted } from "@/hooks/use-mounted";
 
 /** Jumlah tab utama di bottom bar; sisanya masuk sheet "Lainnya". */
 const PRIMARY_TABS = 4;
-
-/**
- * Auth store dipersist di localStorage, jadi render pertama di klien sudah
- * berisi user sementara server merender null. Tunda render sampai mounted
- * agar pohon server & klien identik (hindari hydration mismatch).
- */
-function useMounted() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  return mounted;
-}
 
 function pageTitle(items: NavItem[], pathname: string): string {
   const match = items.find((i) => isNavActive(pathname, i.href));
@@ -36,8 +26,11 @@ export function MobileTopBar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useAuthStore();
+  const mounted = useMounted();
+  // Sebelum mounted, render seperti tanpa user agar cocok dengan HTML server.
+  const u = mounted ? user : null;
 
-  const items = visibleNavItems(user?.role);
+  const items = visibleNavItems(u?.role);
   // Halaman detail/edit = bukan root menu, jadi tampilkan tombol back ala app native.
   const isRoot = items.some((i) => i.href === pathname);
 
@@ -67,9 +60,9 @@ export function MobileTopBar() {
           className="h-10 w-10 flex items-center justify-center"
         >
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.avatarUrl || ""} alt={user?.name || ""} />
+            <AvatarImage src={u?.avatarUrl || ""} alt={u?.name || ""} />
             <AvatarFallback className="bg-white/20 text-white text-xs">
-              {user?.name ? getInitials(user.name) : "U"}
+              {u?.name ? getInitials(u.name) : "U"}
             </AvatarFallback>
           </Avatar>
         </Link>
@@ -84,9 +77,10 @@ export function MobileTabBar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, clearUser } = useAuthStore();
+  const mounted = useMounted();
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  const items = visibleNavItems(user?.role);
+  const items = visibleNavItems(mounted ? user?.role : undefined);
   const tabs = items.slice(0, PRIMARY_TABS);
   const rest = items.slice(PRIMARY_TABS);
 
