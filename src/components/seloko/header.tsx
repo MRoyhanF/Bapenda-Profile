@@ -14,7 +14,7 @@ import api from "@/lib/axios";
 import { getInitials } from "@/lib/utils";
 import Link from "next/link";
 
-export function CmsHeader() {
+export function SelokoHeader() {
   const { user, clearUser } = useAuthStore();
   const { toggle } = useSidebarStore();
   const router = useRouter();
@@ -23,11 +23,11 @@ export function CmsHeader() {
     try {
       await api.post("/auth/logout");
       clearUser();
-      router.push("/cms/login");
+      router.push("/seloko/login");
       toast.success("Berhasil logout");
     } catch {
       clearUser();
-      router.push("/cms/login");
+      router.push("/seloko/login");
     }
   }
 
@@ -64,7 +64,7 @@ export function CmsHeader() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/cms/profile">
+              <Link href="/seloko/profile">
                 <User className="mr-2 h-4 w-4" />
                 Profil Saya
               </Link>

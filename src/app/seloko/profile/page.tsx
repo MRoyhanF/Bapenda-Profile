@@ -19,7 +19,7 @@ import { getInitials } from "@/lib/utils";
 import { Eye, EyeOff, LogOut } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export default function CmsProfilePage() {
+export default function SelokoProfilePage() {
   const { user: storeUser, setUser, clearUser } = useAuthStore();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -47,7 +47,7 @@ export default function CmsProfilePage() {
   }, [me, profileForm]);
 
   const profileMutation = useMutation({
-    mutationFn: (data: UpdateUserInput) => api.put(`/cms/users/${me?.id}`, data),
+    mutationFn: (data: UpdateUserInput) => api.put(`/seloko/users/${me?.id}`, data),
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["me"] });
       if (storeUser) setUser({ ...storeUser, name: res.data.data.name });
@@ -58,7 +58,7 @@ export default function CmsProfilePage() {
 
   const passwordMutation = useMutation({
     mutationFn: (data: ChangePasswordInput) =>
-      api.put(`/cms/users/${me?.id}/password`, data),
+      api.put(`/seloko/users/${me?.id}/password`, data),
     onSuccess: () => { passwordForm.reset(); toast.success("Password berhasil diubah"); },
     onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal mengubah password"),
   });
@@ -71,7 +71,7 @@ export default function CmsProfilePage() {
       // Sesi lokal tetap dibersihkan walau request gagal.
     }
     clearUser();
-    router.push("/cms/login");
+    router.push("/seloko/login");
   }
 
   if (isLoading) return (

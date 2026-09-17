@@ -13,10 +13,10 @@ import Link from "next/link";
 import { formatDate, truncate } from "@/lib/utils";
 import { useAuthStore } from "@/store";
 import { ContentStatus } from "@prisma/client";
-import { ConfirmDialog } from "@/components/cms/confirm-dialog";
-import { DataTableFilter } from "@/components/cms/data-table-filter";
-import { DataTable, ColumnDef } from "@/components/cms/data-table";
-import { DataTablePagination } from "@/components/cms/data-table-pagination";
+import { ConfirmDialog } from "@/components/seloko/confirm-dialog";
+import { DataTableFilter } from "@/components/seloko/data-table-filter";
+import { DataTable, ColumnDef } from "@/components/seloko/data-table";
+import { DataTablePagination } from "@/components/seloko/data-table-pagination";
 import { useDebounce } from "@/hooks/use-debounce";
 
 
@@ -47,7 +47,7 @@ const STATUS_MAP: Record<string, { label: string; variant: "default" | "success"
   PUBLISHED: { label: "Dipublikasi", variant: "success" },
 };
 
-function CmsNewsPage() {
+function SelokoNewsPage() {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -88,11 +88,11 @@ function CmsNewsPage() {
 
   const { data: categoriesData } = useQuery<NewsCategory[]>({
     queryKey: ["news-categories"],
-    queryFn: () => api.get("/cms/news-categories").then((r) => r.data.data),
+    queryFn: () => api.get("/seloko/news-categories").then((r) => r.data.data),
   });
 
   const { data, isLoading } = useQuery<NewsResponse>({
-    queryKey: ["cms-news", page, pageSize, debouncedSearch, statusFilter, categoryFilter],
+    queryKey: ["seloko-news", page, pageSize, debouncedSearch, statusFilter, categoryFilter],
     queryFn: () => {
       const params = new URLSearchParams();
       params.set("page", String(page));
@@ -100,7 +100,7 @@ function CmsNewsPage() {
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (statusFilter !== "all") params.set("status", statusFilter);
       if (categoryFilter !== "all") params.set("categoryId", categoryFilter);
-      return api.get(`/cms/news?${params.toString()}`).then((r) => r.data);
+      return api.get(`/seloko/news?${params.toString()}`).then((r) => r.data);
     },
   });
 
@@ -111,9 +111,9 @@ function CmsNewsPage() {
 
   const actionMutation = useMutation({
     mutationFn: ({ id, action }: { id: number; action: string }) =>
-      api.patch(`/cms/news/${id}`, { action }),
+      api.patch(`/seloko/news/${id}`, { action }),
     onSuccess: (_, vars) => {
-      queryClient.invalidateQueries({ queryKey: ["cms-news"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-news"] });
       const labels: Record<string, string> = {
         submit: "Dikirim untuk review", approve: "Disetujui", reject: "Ditolak",
         publish: "Dipublikasi", unpublish: "Dibatalkan publikasi",
@@ -125,9 +125,9 @@ function CmsNewsPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => api.delete(`/cms/news/${id}`),
+    mutationFn: (id: number) => api.delete(`/seloko/news/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-news"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-news"] });
       toast.success("Berita dihapus");
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
@@ -261,7 +261,7 @@ function CmsNewsPage() {
             </Button>
           )}
           <Button size="sm" variant="outline" asChild title="Edit">
-            <Link href={`/cms/news/${item.id}`}><Pencil className="h-3 w-3" /></Link>
+            <Link href={`/seloko/news/${item.id}`}><Pencil className="h-3 w-3" /></Link>
           </Button>
           {canDelete && (
             <Button size="sm" variant="destructive" title="Hapus"
@@ -289,7 +289,7 @@ function CmsNewsPage() {
           <p className="text-sm text-muted-foreground">Kelola semua artikel berita</p>
         </div>
         <Button asChild>
-          <Link href="/cms/news/create"><Plus className="mr-2 h-4 w-4" />Buat Berita</Link>
+          <Link href="/seloko/news/create"><Plus className="mr-2 h-4 w-4" />Buat Berita</Link>
         </Button>
       </div>
 
@@ -355,5 +355,5 @@ function CmsNewsPage() {
 }
 
 export default function Page() {
-  return <Suspense><CmsNewsPage /></Suspense>;
+  return <Suspense><SelokoNewsPage /></Suspense>;
 }

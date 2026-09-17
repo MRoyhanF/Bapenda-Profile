@@ -28,13 +28,13 @@ export default function EditFaqPage() {
   const queryClient = useQueryClient();
 
   const { data: faqData, isLoading } = useQuery({
-    queryKey: ["cms-faq-detail", id],
-    queryFn: () => api.get(`/cms/faqs/${id}`).then((r) => r.data.data),
+    queryKey: ["seloko-faq-detail", id],
+    queryFn: () => api.get(`/seloko/faqs/${id}`).then((r) => r.data.data),
   });
 
   const { data: categories } = useQuery<FaqCategory[]>({
     queryKey: ["faq-categories"],
-    queryFn: () => api.get("/cms/faq-categories?limit=100").then((r) => r.data.data),
+    queryFn: () => api.get("/seloko/faq-categories?limit=100").then((r) => r.data.data),
   });
 
   const {
@@ -69,14 +69,14 @@ export default function EditFaqPage() {
   const currentCategoryId = watchedCategoryId ?? faqData?.categoryId;
 
   const updateMutation = useMutation({
-    mutationFn: (data: FaqInput) => api.put(`/cms/faqs/${id}`, data),
+    mutationFn: (data: FaqInput) => api.put(`/seloko/faqs/${id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-faqs"] });
-      queryClient.invalidateQueries({ queryKey: ["cms-faq-detail", id] });
-      queryClient.invalidateQueries({ queryKey: ["cms-faq-categories-list"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-faqs"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-faq-detail", id] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-faq-categories-list"] });
       queryClient.invalidateQueries({ queryKey: ["faq-categories"] });
       toast.success("FAQ berhasil diperbarui");
-      router.push(`/cms/faqs/${id}`);
+      router.push(`/seloko/faqs/${id}`);
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
       toast.error(err.response?.data?.message || "Gagal menyimpan FAQ"),
@@ -94,7 +94,7 @@ export default function EditFaqPage() {
     <div className="space-y-6 max-w-3xl">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href={`/cms/faqs/${id}`}><ArrowLeft className="h-4 w-4" /></Link>
+          <Link href={`/seloko/faqs/${id}`}><ArrowLeft className="h-4 w-4" /></Link>
         </Button>
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-primary">Edit FAQ</h1>
@@ -185,7 +185,7 @@ export default function EditFaqPage() {
 
         <div className="flex justify-end gap-3">
           <Button type="button" variant="outline" asChild>
-            <Link href={`/cms/faqs/${id}`}>Batal</Link>
+            <Link href={`/seloko/faqs/${id}`}>Batal</Link>
           </Button>
           <Button type="submit" loading={isSubmitting || updateMutation.isPending}>
             Simpan Perubahan

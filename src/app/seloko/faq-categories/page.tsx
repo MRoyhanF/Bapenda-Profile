@@ -12,10 +12,10 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import { useAuthStore } from "@/store";
-import { ConfirmDialog } from "@/components/cms/confirm-dialog";
-import { DataTableFilter } from "@/components/cms/data-table-filter";
-import { DataTable, ColumnDef } from "@/components/cms/data-table";
-import { DataTablePagination } from "@/components/cms/data-table-pagination";
+import { ConfirmDialog } from "@/components/seloko/confirm-dialog";
+import { DataTableFilter } from "@/components/seloko/data-table-filter";
+import { DataTable, ColumnDef } from "@/components/seloko/data-table";
+import { DataTablePagination } from "@/components/seloko/data-table-pagination";
 import { useDebounce } from "@/hooks/use-debounce";
 
 
@@ -35,7 +35,7 @@ type CategoryResponse = {
   meta: { page: number; limit: number; totalItems: number; totalPages: number };
 };
 
-function CmsFaqCategoriesPage() {
+function SelokoFaqCategoriesPage() {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -70,14 +70,14 @@ function CmsFaqCategoriesPage() {
   }, [debouncedSearch]);
 
   const { data, isLoading } = useQuery<CategoryResponse>({
-    queryKey: ["cms-faq-categories-list", page, pageSize, debouncedSearch, activeFilter],
+    queryKey: ["seloko-faq-categories-list", page, pageSize, debouncedSearch, activeFilter],
     queryFn: () => {
       const params = new URLSearchParams();
       params.set("page", String(page));
       params.set("limit", String(pageSize));
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (activeFilter !== "all") params.set("isActive", activeFilter);
-      return api.get(`/cms/faq-categories?${params.toString()}`).then((r) => r.data);
+      return api.get(`/seloko/faq-categories?${params.toString()}`).then((r) => r.data);
     },
   });
 
@@ -85,11 +85,11 @@ function CmsFaqCategoriesPage() {
   const meta = data?.meta;
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => api.delete(`/cms/faq-categories/${id}`),
+    mutationFn: (id: number) => api.delete(`/seloko/faq-categories/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-faq-categories-list"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-faq-categories-list"] });
       queryClient.invalidateQueries({ queryKey: ["faq-categories"] });
-      queryClient.invalidateQueries({ queryKey: ["cms-faqs"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-faqs"] });
       toast.success("Kategori berhasil dihapus");
       setDeleteTarget(null);
     },
@@ -182,11 +182,11 @@ function CmsFaqCategoriesPage() {
       render: (item) => (
         <div className="flex items-center justify-end gap-1">
           <Button size="sm" variant="outline" asChild title="Detail">
-            <Link href={`/cms/faq-categories/${item.id}`}><Eye className="h-3 w-3" /></Link>
+            <Link href={`/seloko/faq-categories/${item.id}`}><Eye className="h-3 w-3" /></Link>
           </Button>
           {canManage && (
             <Button size="sm" variant="outline" asChild title="Edit">
-              <Link href={`/cms/faq-categories/${item.id}/edit`}><Pencil className="h-3 w-3" /></Link>
+              <Link href={`/seloko/faq-categories/${item.id}/edit`}><Pencil className="h-3 w-3" /></Link>
             </Button>
           )}
           {canManage && (
@@ -225,7 +225,7 @@ function CmsFaqCategoriesPage() {
         </div>
         {canManage && (
           <Button asChild>
-            <Link href="/cms/faq-categories/create"><Plus className="mr-2 h-4 w-4" />Tambah Kategori</Link>
+            <Link href="/seloko/faq-categories/create"><Plus className="mr-2 h-4 w-4" />Tambah Kategori</Link>
           </Button>
         )}
       </div>
@@ -282,5 +282,5 @@ function CmsFaqCategoriesPage() {
 }
 
 export default function Page() {
-  return <Suspense><CmsFaqCategoriesPage /></Suspense>;
+  return <Suspense><SelokoFaqCategoriesPage /></Suspense>;
 }

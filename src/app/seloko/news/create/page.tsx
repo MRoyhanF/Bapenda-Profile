@@ -15,8 +15,8 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Eye } from "lucide-react";
 import Link from "next/link";
-import { ImageUpload } from "@/components/cms/image-upload";
-import { RichTextEditor } from "@/components/cms/rich-text-editor";
+import { ImageUpload } from "@/components/seloko/image-upload";
+import { RichTextEditor } from "@/components/seloko/rich-text-editor";
 import Image from "next/image";
 
 export default function CreateNewsPage() {
@@ -24,7 +24,7 @@ export default function CreateNewsPage() {
 
   const { data: categories } = useQuery({
     queryKey: ["news-categories"],
-    queryFn: () => api.get("/cms/news-categories").then((r) => r.data.data),
+    queryFn: () => api.get("/seloko/news-categories").then((r) => r.data.data),
   });
 
   const {
@@ -44,10 +44,10 @@ export default function CreateNewsPage() {
   const contentValue = watch("content") ?? "";
 
   const mutation = useMutation({
-    mutationFn: (data: NewsInput) => api.post("/cms/news", data),
+    mutationFn: (data: NewsInput) => api.post("/seloko/news", data),
     onSuccess: () => {
       toast.success("Berita berhasil dibuat");
-      router.push("/cms/news");
+      router.push("/seloko/news");
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
       toast.error(err.response?.data?.message || "Gagal membuat berita"),
@@ -57,7 +57,7 @@ export default function CreateNewsPage() {
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/cms/news"><ArrowLeft className="h-4 w-4" /></Link>
+          <Link href="/seloko/news"><ArrowLeft className="h-4 w-4" /></Link>
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-primary">Buat Berita Baru</h1>
@@ -151,7 +151,7 @@ export default function CreateNewsPage() {
 
             <div className="flex justify-end gap-3">
               <Button type="button" variant="outline" asChild>
-                <Link href="/cms/news">Batal</Link>
+                <Link href="/seloko/news">Batal</Link>
               </Button>
               <Button type="submit" loading={isSubmitting || mutation.isPending}>Simpan sebagai Draft</Button>
             </div>

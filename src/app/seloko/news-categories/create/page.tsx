@@ -37,12 +37,12 @@ export default function CreateNewsCategoryPage() {
   }, [nameValue, setValue]);
 
   const mutation = useMutation({
-    mutationFn: (data: NewsCategoryInput) => api.post("/cms/news-categories", data),
+    mutationFn: (data: NewsCategoryInput) => api.post("/seloko/news-categories", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-news-categories-list"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-news-categories-list"] });
       queryClient.invalidateQueries({ queryKey: ["news-categories"] });
       toast.success("Kategori berita berhasil dibuat");
-      router.push("/cms/news-categories");
+      router.push("/seloko/news-categories");
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
       toast.error(err.response?.data?.message || "Gagal membuat kategori"),
@@ -52,7 +52,7 @@ export default function CreateNewsCategoryPage() {
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/cms/news-categories"><ArrowLeft className="h-4 w-4" /></Link>
+          <Link href="/seloko/news-categories"><ArrowLeft className="h-4 w-4" /></Link>
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-primary">Tambah Kategori Berita</h1>
@@ -105,7 +105,7 @@ export default function CreateNewsCategoryPage() {
 
         <div className="flex justify-end gap-3">
           <Button type="button" variant="outline" asChild>
-            <Link href="/cms/news-categories">Batal</Link>
+            <Link href="/seloko/news-categories">Batal</Link>
           </Button>
           <Button type="submit" loading={isSubmitting || mutation.isPending}>Simpan Kategori</Button>
         </div>

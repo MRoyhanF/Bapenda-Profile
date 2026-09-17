@@ -24,8 +24,8 @@ export default function EditNewsCategoryPage() {
   const queryClient = useQueryClient();
 
   const { data: categoryData, isLoading } = useQuery({
-    queryKey: ["cms-news-category-detail", id],
-    queryFn: () => api.get(`/cms/news-categories/${id}`).then((r) => r.data.data),
+    queryKey: ["seloko-news-category-detail", id],
+    queryFn: () => api.get(`/seloko/news-categories/${id}`).then((r) => r.data.data),
   });
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors, isSubmitting } } = useForm<NewsCategoryInput>({
@@ -48,13 +48,13 @@ export default function EditNewsCategoryPage() {
   }, [categoryData, reset]);
 
   const updateMutation = useMutation({
-    mutationFn: (data: NewsCategoryInput) => api.put(`/cms/news-categories/${id}`, data),
+    mutationFn: (data: NewsCategoryInput) => api.put(`/seloko/news-categories/${id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-news-categories-list"] });
-      queryClient.invalidateQueries({ queryKey: ["cms-news-category-detail", id] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-news-categories-list"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-news-category-detail", id] });
       queryClient.invalidateQueries({ queryKey: ["news-categories"] });
       toast.success("Kategori berita berhasil diperbarui");
-      router.push(`/cms/news-categories/${id}`);
+      router.push(`/seloko/news-categories/${id}`);
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
       toast.error(err.response?.data?.message || "Gagal menyimpan kategori"),
@@ -72,7 +72,7 @@ export default function EditNewsCategoryPage() {
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href={`/cms/news-categories/${id}`}><ArrowLeft className="h-4 w-4" /></Link>
+          <Link href={`/seloko/news-categories/${id}`}><ArrowLeft className="h-4 w-4" /></Link>
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-primary">Edit Kategori Berita</h1>
@@ -125,7 +125,7 @@ export default function EditNewsCategoryPage() {
 
         <div className="flex justify-end gap-3">
           <Button type="button" variant="outline" asChild>
-            <Link href={`/cms/news-categories/${id}`}>Batal</Link>
+            <Link href={`/seloko/news-categories/${id}`}>Batal</Link>
           </Button>
           <Button type="submit" loading={isSubmitting || updateMutation.isPending}>
             Simpan Perubahan

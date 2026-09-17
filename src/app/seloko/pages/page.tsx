@@ -11,10 +11,10 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import { useAuthStore } from "@/store";
-import { ConfirmDialog } from "@/components/cms/confirm-dialog";
-import { DataTable, ColumnDef } from "@/components/cms/data-table";
-import { DataTableFilter } from "@/components/cms/data-table-filter";
-import { DataTablePagination } from "@/components/cms/data-table-pagination";
+import { ConfirmDialog } from "@/components/seloko/confirm-dialog";
+import { DataTable, ColumnDef } from "@/components/seloko/data-table";
+import { DataTableFilter } from "@/components/seloko/data-table-filter";
+import { DataTablePagination } from "@/components/seloko/data-table-pagination";
 import { useDebounce } from "@/hooks/use-debounce";
 
 
@@ -31,7 +31,7 @@ type PageResponse = {
   meta: { page: number; limit: number; totalItems: number; totalPages: number };
 };
 
-function CmsPagesPage() {
+function SelokoPagesPage() {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -66,14 +66,14 @@ function CmsPagesPage() {
   }, [debouncedSearch]);
 
   const { data, isLoading } = useQuery<PageResponse>({
-    queryKey: ["cms-pages", page, pageSize, debouncedSearch, statusFilter],
+    queryKey: ["seloko-pages", page, pageSize, debouncedSearch, statusFilter],
     queryFn: () => {
       const params = new URLSearchParams();
       params.set("page", String(page));
       params.set("limit", String(pageSize));
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (statusFilter !== "all") params.set("status", statusFilter);
-      return api.get(`/cms/pages?${params.toString()}`).then((r) => r.data);
+      return api.get(`/seloko/pages?${params.toString()}`).then((r) => r.data);
     },
   });
 
@@ -81,9 +81,9 @@ function CmsPagesPage() {
   const meta = data?.meta;
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => api.delete(`/cms/pages/${id}`),
+    mutationFn: (id: number) => api.delete(`/seloko/pages/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-pages"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-pages"] });
       toast.success("Halaman dihapus");
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
@@ -162,7 +162,7 @@ function CmsPagesPage() {
       render: (row) => (
         <div className="flex items-center justify-end gap-1">
           <Button size="sm" variant="outline" asChild title="Edit">
-            <Link href={`/cms/pages/${row.id}/edit`}>
+            <Link href={`/seloko/pages/${row.id}/edit`}>
               <Pencil className="h-3.5 w-3.5" />
             </Link>
           </Button>
@@ -190,7 +190,7 @@ function CmsPagesPage() {
         </div>
         {canManage && (
           <Button asChild>
-            <Link href="/cms/pages/create">
+            <Link href="/seloko/pages/create">
               <Plus className="mr-2 h-4 w-4" />Buat Halaman
             </Link>
           </Button>
@@ -249,5 +249,5 @@ function CmsPagesPage() {
 }
 
 export default function Page() {
-  return <Suspense><CmsPagesPage /></Suspense>;
+  return <Suspense><SelokoPagesPage /></Suspense>;
 }

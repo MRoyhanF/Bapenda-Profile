@@ -46,8 +46,8 @@ export default function NewsCategoryDetailPage() {
   const canManage = user?.role === "Super_Admin" || user?.role === "Admin";
 
   const { data: category, isLoading } = useQuery<NewsCategoryDetail>({
-    queryKey: ["cms-news-category-detail", id],
-    queryFn: () => api.get(`/cms/news-categories/${id}`).then((r) => r.data.data),
+    queryKey: ["seloko-news-category-detail", id],
+    queryFn: () => api.get(`/seloko/news-categories/${id}`).then((r) => r.data.data),
   });
 
   if (isLoading) {
@@ -66,7 +66,7 @@ export default function NewsCategoryDetailPage() {
     <div className="space-y-6 max-w-3xl">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/cms/news-categories"><ArrowLeft className="h-4 w-4" /></Link>
+          <Link href="/seloko/news-categories"><ArrowLeft className="h-4 w-4" /></Link>
         </Button>
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-primary">Detail Kategori Berita</h1>
@@ -78,7 +78,7 @@ export default function NewsCategoryDetailPage() {
         </div>
         {canManage && (
           <Button asChild>
-            <Link href={`/cms/news-categories/${id}/edit`}><Pencil className="mr-2 h-4 w-4" />Edit</Link>
+            <Link href={`/seloko/news-categories/${id}/edit`}><Pencil className="mr-2 h-4 w-4" />Edit</Link>
           </Button>
         )}
       </div>
@@ -133,7 +133,7 @@ export default function NewsCategoryDetailPage() {
             <CardTitle className="text-base">Berita dalam Kategori Ini</CardTitle>
             {canManage && (
               <Button size="sm" asChild variant="outline">
-                <Link href="/cms/news/create"><Newspaper className="mr-2 h-3 w-3" />Tambah Berita</Link>
+                <Link href="/seloko/news/create"><Newspaper className="mr-2 h-3 w-3" />Tambah Berita</Link>
               </Button>
             )}
           </div>
@@ -154,7 +154,7 @@ export default function NewsCategoryDetailPage() {
                   <div className="flex items-center gap-3 flex-shrink-0 ml-3">
                     <span className="text-xs text-muted-foreground">{formatDate(item.createdAt)}</span>
                     <Button size="sm" variant="ghost" asChild>
-                      <Link href={`/cms/news/${item.id}`}><Pencil className="h-3 w-3" /></Link>
+                      <Link href={`/seloko/news/${item.id}`}><Pencil className="h-3 w-3" /></Link>
                     </Button>
                   </div>
                 </div>
@@ -162,7 +162,7 @@ export default function NewsCategoryDetailPage() {
               {category._count.news > 10 && (
                 <p className="text-xs text-muted-foreground text-center pt-2">
                   Menampilkan 10 dari {category._count.news} berita.{" "}
-                  <Link href={`/cms/news?categoryId=${id}`} className="text-primary underline">Lihat semua</Link>
+                  <Link href={`/seloko/news?categoryId=${id}`} className="text-primary underline">Lihat semua</Link>
                 </p>
               )}
             </div>

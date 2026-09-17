@@ -11,10 +11,10 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import { useAuthStore } from "@/store";
-import { ConfirmDialog } from "@/components/cms/confirm-dialog";
-import { DataTableFilter } from "@/components/cms/data-table-filter";
-import { DataTable, ColumnDef } from "@/components/cms/data-table";
-import { DataTablePagination } from "@/components/cms/data-table-pagination";
+import { ConfirmDialog } from "@/components/seloko/confirm-dialog";
+import { DataTableFilter } from "@/components/seloko/data-table-filter";
+import { DataTable, ColumnDef } from "@/components/seloko/data-table";
+import { DataTablePagination } from "@/components/seloko/data-table-pagination";
 import { useDebounce } from "@/hooks/use-debounce";
 
 
@@ -38,7 +38,7 @@ type FaqResponse = {
   meta: { page: number; limit: number; totalItems: number; totalPages: number };
 };
 
-function CmsFaqsPage() {
+function SelokoFaqsPage() {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -75,11 +75,11 @@ function CmsFaqsPage() {
 
   const { data: categoriesData } = useQuery<FaqCategory[]>({
     queryKey: ["faq-categories"],
-    queryFn: () => api.get("/cms/faq-categories?limit=100").then((r) => r.data.data),
+    queryFn: () => api.get("/seloko/faq-categories?limit=100").then((r) => r.data.data),
   });
 
   const { data, isLoading } = useQuery<FaqResponse>({
-    queryKey: ["cms-faqs", page, pageSize, debouncedSearch, categoryFilter, publishedFilter],
+    queryKey: ["seloko-faqs", page, pageSize, debouncedSearch, categoryFilter, publishedFilter],
     queryFn: () => {
       const params = new URLSearchParams();
       params.set("page", String(page));
@@ -87,7 +87,7 @@ function CmsFaqsPage() {
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (categoryFilter !== "all") params.set("categoryId", categoryFilter);
       if (publishedFilter !== "all") params.set("isPublished", publishedFilter);
-      return api.get(`/cms/faqs?${params.toString()}`).then((r) => r.data);
+      return api.get(`/seloko/faqs?${params.toString()}`).then((r) => r.data);
     },
   });
 
@@ -95,10 +95,10 @@ function CmsFaqsPage() {
   const meta = data?.meta;
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => api.delete(`/cms/faqs/${id}`),
+    mutationFn: (id: number) => api.delete(`/seloko/faqs/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-faqs"] });
-      queryClient.invalidateQueries({ queryKey: ["cms-faq-categories-list"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-faqs"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-faq-categories-list"] });
       queryClient.invalidateQueries({ queryKey: ["faq-categories"] });
       toast.success("FAQ berhasil dihapus");
       setDeleteTarget(null);
@@ -199,11 +199,11 @@ function CmsFaqsPage() {
       render: (item) => (
         <div className="flex items-center justify-end gap-1">
           <Button size="sm" variant="outline" asChild title="Detail">
-            <Link href={`/cms/faqs/${item.id}`}><Eye className="h-3 w-3" /></Link>
+            <Link href={`/seloko/faqs/${item.id}`}><Eye className="h-3 w-3" /></Link>
           </Button>
           {canManage && (
             <Button size="sm" variant="outline" asChild title="Edit">
-              <Link href={`/cms/faqs/${item.id}/edit`}><Pencil className="h-3 w-3" /></Link>
+              <Link href={`/seloko/faqs/${item.id}/edit`}><Pencil className="h-3 w-3" /></Link>
             </Button>
           )}
           {canManage && (
@@ -227,7 +227,7 @@ function CmsFaqsPage() {
         </div>
         {canManage && (
           <Button asChild>
-            <Link href="/cms/faqs/create"><Plus className="mr-2 h-4 w-4" />Tambah FAQ</Link>
+            <Link href="/seloko/faqs/create"><Plus className="mr-2 h-4 w-4" />Tambah FAQ</Link>
           </Button>
         )}
       </div>
@@ -291,5 +291,5 @@ function CmsFaqsPage() {
 }
 
 export default function Page() {
-  return <Suspense><CmsFaqsPage /></Suspense>;
+  return <Suspense><SelokoFaqsPage /></Suspense>;
 }

@@ -35,13 +35,13 @@ export default function EditUserPage() {
   const queryClient = useQueryClient();
 
   const { data: userData, isLoading } = useQuery({
-    queryKey: ["cms-user", id],
-    queryFn: () => api.get(`/cms/users/${id}`).then((r) => r.data.data),
+    queryKey: ["seloko-user", id],
+    queryFn: () => api.get(`/seloko/users/${id}`).then((r) => r.data.data),
   });
 
   const { data: uptds } = useQuery({
     queryKey: ["uptds"],
-    queryFn: () => api.get("/cms/uptd").then((r) => r.data.data),
+    queryFn: () => api.get("/seloko/uptd").then((r) => r.data.data),
   });
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors, isSubmitting } } = useForm<UpdateUserInput>({
@@ -57,14 +57,14 @@ export default function EditUserPage() {
   }, [userData, reset]);
 
   const updateMutation = useMutation({
-    mutationFn: (data: UpdateUserInput) => api.put(`/cms/users/${id}`, data),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["cms-user", id] }); toast.success("Pengguna diperbarui"); },
+    mutationFn: (data: UpdateUserInput) => api.put(`/seloko/users/${id}`, data),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["seloko-user", id] }); toast.success("Pengguna diperbarui"); },
     onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal"),
   });
 
   const toggleActiveMutation = useMutation({
-    mutationFn: (isActive: boolean) => api.put(`/cms/users/${id}`, { isActive }),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["cms-user", id] }); toast.success("Status diperbarui"); },
+    mutationFn: (isActive: boolean) => api.put(`/seloko/users/${id}`, { isActive }),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["seloko-user", id] }); toast.success("Status diperbarui"); },
     onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal"),
   });
 
@@ -77,7 +77,7 @@ export default function EditUserPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild><Link href="/cms/users"><ArrowLeft className="h-4 w-4" /></Link></Button>
+        <Button variant="ghost" size="icon" asChild><Link href="/seloko/users"><ArrowLeft className="h-4 w-4" /></Link></Button>
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-primary">Edit Pengguna</h1>
           <div className="flex items-center gap-2 mt-1">

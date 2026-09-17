@@ -140,14 +140,14 @@ function parseMapsUrl(url: string): { lat: string; lng: string; embedUrl: string
   return { lat, lng, embedUrl };
 }
 
-export default function CmsSettingsPage() {
+export default function SelokoSettingsPage() {
   const queryClient = useQueryClient();
   const [mapsUrl, setMapsUrl] = useState("");
   const [mapsStatus, setMapsStatus] = useState<"idle" | "ok" | "error">("idle");
 
   const { data: settings, isLoading } = useQuery({
-    queryKey: ["cms-settings"],
-    queryFn: () => api.get("/cms/settings").then((r) => r.data.data),
+    queryKey: ["seloko-settings"],
+    queryFn: () => api.get("/seloko/settings").then((r) => r.data.data),
   });
 
   const { register, handleSubmit, reset, setValue, formState: { isDirty, isSubmitting } } = useForm<SettingsForm>();
@@ -171,9 +171,9 @@ export default function CmsSettingsPage() {
   };
 
   const mutation = useMutation({
-    mutationFn: (data: SettingsForm) => api.put("/cms/settings", data),
+    mutationFn: (data: SettingsForm) => api.put("/seloko/settings", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-settings"] });
       toast.success("Pengaturan berhasil disimpan");
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>

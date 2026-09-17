@@ -2,11 +2,11 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "CMS BAPENDA Provinsi Jambi",
-    short_name: "CMS BAPENDA",
-    description: "Aplikasi pengelolaan konten dan cek pajak kendaraan BAPENDA Provinsi Jambi",
-    start_url: "/cms/dashboard",
-    scope: "/cms",
+    name: "Seloko BAPENDA Provinsi Jambi",
+    short_name: "Seloko BAPENDA",
+    description: "Aplikasi Seloko — pengelolaan konten dan cek pajak kendaraan BAPENDA Provinsi Jambi",
+    start_url: "/seloko/dashboard",
+    scope: "/seloko",
     display: "standalone",
     orientation: "portrait",
     background_color: "#ffffff",
@@ -19,8 +19,8 @@ export default function manifest(): MetadataRoute.Manifest {
       { src: "/icons/maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
     shortcuts: [
-      { name: "Cek Pajak Kendaraan", short_name: "Cek Pajak", url: "/cms/pajak-kendaraan" },
-      { name: "Dashboard", short_name: "Dashboard", url: "/cms/dashboard" },
+      { name: "Cek Pajak Kendaraan", short_name: "Cek Pajak", url: "/seloko/pajak-kendaraan" },
+      { name: "Dashboard", short_name: "Dashboard", url: "/seloko/dashboard" },
     ],
   };
 }

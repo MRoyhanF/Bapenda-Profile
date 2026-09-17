@@ -18,15 +18,15 @@ import api from "@/lib/axios";
 import { toast } from "sonner";
 import { ArrowLeft, Eye } from "lucide-react";
 import Link from "next/link";
-import { RichTextEditor } from "@/components/cms/rich-text-editor";
+import { RichTextEditor } from "@/components/seloko/rich-text-editor";
 
 export default function EditPagePage() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
 
   const { data: pageData, isLoading } = useQuery({
-    queryKey: ["cms-page-detail", id],
-    queryFn: () => api.get(`/cms/pages/${id}`).then((r) => r.data.data),
+    queryKey: ["seloko-page-detail", id],
+    queryFn: () => api.get(`/seloko/pages/${id}`).then((r) => r.data.data),
   });
 
   const {
@@ -59,11 +59,11 @@ export default function EditPagePage() {
   const isPublished = watch("isPublished");
 
   const updateMutation = useMutation({
-    mutationFn: (data: PageInput) => api.put(`/cms/pages/${id}`, data),
+    mutationFn: (data: PageInput) => api.put(`/seloko/pages/${id}`, data),
     onSuccess: () => {
       toast.success("Halaman berhasil diperbarui");
-      queryClient.invalidateQueries({ queryKey: ["cms-page-detail", id] });
-      queryClient.invalidateQueries({ queryKey: ["cms-pages"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-page-detail", id] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-pages"] });
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
       toast.error(err.response?.data?.message || "Gagal menyimpan"),
@@ -92,7 +92,7 @@ export default function EditPagePage() {
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/cms/pages">
+          <Link href="/seloko/pages">
             <ArrowLeft className="h-4 w-4" />
           </Link>
         </Button>
@@ -198,7 +198,7 @@ export default function EditPagePage() {
 
             <div className="flex justify-end gap-3">
               <Button type="button" variant="outline" asChild>
-                <Link href="/cms/pages">Batal</Link>
+                <Link href="/seloko/pages">Batal</Link>
               </Button>
               <Button
                 type="submit"

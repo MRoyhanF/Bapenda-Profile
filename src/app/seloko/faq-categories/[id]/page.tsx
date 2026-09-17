@@ -38,8 +38,8 @@ export default function FaqCategoryDetailPage() {
   const canManage = user?.role === "Super_Admin" || user?.role === "Admin";
 
   const { data: category, isLoading } = useQuery<FaqCategoryDetail>({
-    queryKey: ["cms-faq-category-detail", id],
-    queryFn: () => api.get(`/cms/faq-categories/${id}`).then((r) => r.data.data),
+    queryKey: ["seloko-faq-category-detail", id],
+    queryFn: () => api.get(`/seloko/faq-categories/${id}`).then((r) => r.data.data),
   });
 
   if (isLoading) {
@@ -58,7 +58,7 @@ export default function FaqCategoryDetailPage() {
     <div className="space-y-6 max-w-3xl">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/cms/faq-categories"><ArrowLeft className="h-4 w-4" /></Link>
+          <Link href="/seloko/faq-categories"><ArrowLeft className="h-4 w-4" /></Link>
         </Button>
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-primary">Detail Kategori FAQ</h1>
@@ -70,7 +70,7 @@ export default function FaqCategoryDetailPage() {
         </div>
         {canManage && (
           <Button asChild>
-            <Link href={`/cms/faq-categories/${id}/edit`}><Pencil className="mr-2 h-4 w-4" />Edit</Link>
+            <Link href={`/seloko/faq-categories/${id}/edit`}><Pencil className="mr-2 h-4 w-4" />Edit</Link>
           </Button>
         )}
       </div>
@@ -126,7 +126,7 @@ export default function FaqCategoryDetailPage() {
             <CardTitle className="text-base">Daftar FAQ dalam Kategori Ini</CardTitle>
             {canManage && (
               <Button size="sm" asChild variant="outline">
-                <Link href={`/cms/faqs/create`}><HelpCircle className="mr-2 h-3 w-3" />Tambah FAQ</Link>
+                <Link href={`/seloko/faqs/create`}><HelpCircle className="mr-2 h-3 w-3" />Tambah FAQ</Link>
               </Button>
             )}
           </div>
@@ -147,7 +147,7 @@ export default function FaqCategoryDetailPage() {
                   <div className="flex items-center gap-3 flex-shrink-0 ml-3">
                     <span className="text-xs text-muted-foreground">{faq.viewCount}x</span>
                     <Button size="sm" variant="outline" asChild>
-                      <Link href={`/cms/faqs/${faq.id}`}><Pencil className="h-3 w-3" /></Link>
+                      <Link href={`/seloko/faqs/${faq.id}`}><Pencil className="h-3 w-3" /></Link>
                     </Button>
                   </div>
                 </div>

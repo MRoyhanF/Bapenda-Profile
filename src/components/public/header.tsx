@@ -167,10 +167,10 @@ export function PublicHeader({ pages = [] }: PublicHeaderProps) {
             )}
           </nav>
 
-          {/* CMS Link */}
+          {/* Seloko Link */}
           <div className="hidden lg:flex items-center gap-2">
             <Button size="sm" asChild>
-              <Link href="/cms/login">Login CMS</Link>
+              <Link href="/seloko/login">Login Seloko</Link>
             </Button>
           </div>
 
@@ -241,7 +241,7 @@ export function PublicHeader({ pages = [] }: PublicHeaderProps) {
           )}
           <div className="pt-2 border-t">
             <Button size="sm" className="w-full" asChild>
-              <Link href="/cms/login">Login CMS</Link>
+              <Link href="/seloko/login">Login Seloko</Link>
             </Button>
           </div>
         </div>

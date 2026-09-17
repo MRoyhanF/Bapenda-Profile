@@ -13,15 +13,15 @@ import { Plus, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
-import { ConfirmDialog } from "@/components/cms/confirm-dialog";
+import { ConfirmDialog } from "@/components/seloko/confirm-dialog";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { bannerSchema, BannerInput } from "@/lib/validations";
-import { ImageUpload } from "@/components/cms/image-upload";
+import { ImageUpload } from "@/components/seloko/image-upload";
 import { Textarea } from "@/components/ui/textarea";
-import { DataTableFilter } from "@/components/cms/data-table-filter";
-import { DataTable, ColumnDef } from "@/components/cms/data-table";
-import { DataTablePagination } from "@/components/cms/data-table-pagination";
+import { DataTableFilter } from "@/components/seloko/data-table-filter";
+import { DataTable, ColumnDef } from "@/components/seloko/data-table";
+import { DataTablePagination } from "@/components/seloko/data-table-pagination";
 import { useDebounce } from "@/hooks/use-debounce";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -42,7 +42,7 @@ type BannerResponse = {
   meta: { page: number; limit: number; totalItems: number; totalPages: number };
 };
 
-function CmsBannersPage() {
+function SelokoBannersPage() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
@@ -91,7 +91,7 @@ function CmsBannersPage() {
   // ── Data fetching ──────────────────────────────────────────────────────────
 
   const { data, isLoading } = useQuery<BannerResponse>({
-    queryKey: ["cms-banners", page, pageSize, debouncedSearch, statusFilter],
+    queryKey: ["seloko-banners", page, pageSize, debouncedSearch, statusFilter],
     queryFn: () => {
       const params = new URLSearchParams();
       params.set("page", String(page));
@@ -99,7 +99,7 @@ function CmsBannersPage() {
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (statusFilter === "active") params.set("active", "true");
       if (statusFilter === "inactive") params.set("active", "false");
-      return api.get(`/cms/banners?${params.toString()}`).then((r) => r.data);
+      return api.get(`/seloko/banners?${params.toString()}`).then((r) => r.data);
     },
   });
 
@@ -119,9 +119,9 @@ function CmsBannersPage() {
 
   const saveMutation = useMutation({
     mutationFn: (data: BannerInput) =>
-      editId ? api.put(`/cms/banners/${editId}`, data) : api.post("/cms/banners", data),
+      editId ? api.put(`/seloko/banners/${editId}`, data) : api.post("/seloko/banners", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-banners"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-banners"] });
       toast.success(editId ? "Banner diperbarui" : "Banner dibuat");
       handleDialogOpenChange(false);
     },
@@ -130,9 +130,9 @@ function CmsBannersPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.delete(`/cms/banners/${id}`),
+    mutationFn: (id: string) => api.delete(`/seloko/banners/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-banners"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-banners"] });
       toast.success("Banner dihapus");
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
@@ -361,5 +361,5 @@ function CmsBannersPage() {
 }
 
 export default function Page() {
-  return <Suspense><CmsBannersPage /></Suspense>;
+  return <Suspense><SelokoBannersPage /></Suspense>;
 }

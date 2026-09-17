@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronLeft, MoreHorizontal, LogOut, ExternalLink, X } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/axios";
-import { visibleNavItems, isNavActive, type NavItem } from "@/components/cms/nav-items";
+import { visibleNavItems, isNavActive, type NavItem } from "@/components/seloko/nav-items";
 
 /** Jumlah tab utama di bottom bar; sisanya masuk sheet "Lainnya". */
 const PRIMARY_TABS = 4;
@@ -27,7 +27,7 @@ function useMounted() {
 
 function pageTitle(items: NavItem[], pathname: string): string {
   const match = items.find((i) => isNavActive(pathname, i.href));
-  return match?.label ?? "CMS";
+  return match?.label ?? "Seloko";
 }
 
 // ─── Top app bar (mobile) ─────────────────────────────────────────────────────
@@ -62,7 +62,7 @@ export function MobileTopBar() {
         <h1 className="flex-1 text-base font-semibold truncate">{pageTitle(items, pathname)}</h1>
 
         <Link
-          href="/cms/profile"
+          href="/seloko/profile"
           aria-label="Profil saya"
           className="h-10 w-10 flex items-center justify-center"
         >
@@ -111,7 +111,7 @@ export function MobileTabBar() {
       // Sesi lokal tetap dibersihkan walau request gagal.
     }
     clearUser();
-    router.push("/cms/login");
+    router.push("/seloko/login");
   }
 
   const restActive = rest.some((i) => isNavActive(pathname, i.href));

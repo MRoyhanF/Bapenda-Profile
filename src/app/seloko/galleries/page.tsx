@@ -14,9 +14,9 @@ import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import { useAuthStore } from "@/store";
 import { ContentStatus } from "@prisma/client";
-import { ConfirmDialog } from "@/components/cms/confirm-dialog";
-import { DataTableFilter } from "@/components/cms/data-table-filter";
-import { DataTablePagination } from "@/components/cms/data-table-pagination";
+import { ConfirmDialog } from "@/components/seloko/confirm-dialog";
+import { DataTableFilter } from "@/components/seloko/data-table-filter";
+import { DataTablePagination } from "@/components/seloko/data-table-pagination";
 import { useDebounce } from "@/hooks/use-debounce";
 
 
@@ -44,7 +44,7 @@ const STATUS_MAP: Record<string, { label: string; variant: "default" | "success"
   PUBLISHED: { label: "Dipublikasi", variant: "success" },
 };
 
-function CmsGalleriesPage() {
+function SelokoGalleriesPage() {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -83,14 +83,14 @@ function CmsGalleriesPage() {
   // ── Data fetching ──────────────────────────────────────────────────────────
 
   const { data, isLoading } = useQuery<GalleryResponse>({
-    queryKey: ["cms-galleries", page, pageSize, debouncedSearch, statusFilter],
+    queryKey: ["seloko-galleries", page, pageSize, debouncedSearch, statusFilter],
     queryFn: () => {
       const params = new URLSearchParams();
       params.set("page", String(page));
       params.set("limit", String(pageSize));
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (statusFilter !== "all") params.set("status", statusFilter);
-      return api.get(`/cms/galleries?${params.toString()}`).then((r) => r.data);
+      return api.get(`/seloko/galleries?${params.toString()}`).then((r) => r.data);
     },
   });
 
@@ -101,9 +101,9 @@ function CmsGalleriesPage() {
 
   const actionMutation = useMutation({
     mutationFn: ({ id, action }: { id: number; action: string }) =>
-      api.patch(`/cms/galleries/${id}`, { action }),
+      api.patch(`/seloko/galleries/${id}`, { action }),
     onSuccess: (_, vars) => {
-      queryClient.invalidateQueries({ queryKey: ["cms-galleries"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-galleries"] });
       const labels: Record<string, string> = {
         submit: "Dikirim untuk review",
         approve: "Disetujui",
@@ -118,9 +118,9 @@ function CmsGalleriesPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => api.delete(`/cms/galleries/${id}`),
+    mutationFn: (id: number) => api.delete(`/seloko/galleries/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-galleries"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-galleries"] });
       toast.success("Galeri dihapus");
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
@@ -193,7 +193,7 @@ function CmsGalleriesPage() {
           <p className="text-sm text-muted-foreground">Kelola foto dan video galeri</p>
         </div>
         <Button asChild>
-          <Link href="/cms/galleries/create">
+          <Link href="/seloko/galleries/create">
             <Plus className="mr-2 h-4 w-4" />Buat Galeri
           </Link>
         </Button>
@@ -306,7 +306,7 @@ function CmsGalleriesPage() {
                 )}
                 <div className="ml-auto flex gap-1">
                   <Button size="sm" variant="outline" className="h-7 w-7 p-0" asChild title="Edit">
-                    <Link href={`/cms/galleries/${item.id}`}><Pencil className="h-3 w-3" /></Link>
+                    <Link href={`/seloko/galleries/${item.id}`}><Pencil className="h-3 w-3" /></Link>
                   </Button>
                   {canDelete && (
                     <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-destructive hover:text-destructive" title="Hapus"
@@ -346,5 +346,5 @@ function CmsGalleriesPage() {
 }
 
 export default function Page() {
-  return <Suspense><CmsGalleriesPage /></Suspense>;
+  return <Suspense><SelokoGalleriesPage /></Suspense>;
 }

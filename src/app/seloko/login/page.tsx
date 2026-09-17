@@ -58,7 +58,7 @@ export default function LoginPage() {
       setUser(res.data.data.user);
       setAttempts(0);
       toast.success("Login berhasil");
-      router.push("/cms/dashboard");
+      router.push("/seloko/dashboard");
     } catch (err) {
       const error = err as { response?: { data?: { message?: string } } };
       const newAttempts = attempts + 1;
@@ -102,8 +102,8 @@ export default function LoginPage() {
             priority
             className="mx-auto mb-2 h-16 w-16 object-contain"
           />
-          <CardTitle className="text-2xl font-bold text-primary">BAPENDA Jambi</CardTitle>
-          <CardDescription>Masuk ke sistem manajemen konten</CardDescription>
+          <CardTitle className="text-2xl font-bold text-primary">Seloko</CardTitle>
+          <CardDescription>Masuk ke Seloko BAPENDA Provinsi Jambi</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -160,7 +160,7 @@ export default function LoginPage() {
           </form>
 
           <p className="mt-4 text-center text-xs text-muted-foreground">
-            Sistem Manajemen Konten BAPENDA Provinsi Jambi
+            Seloko BAPENDA Provinsi Jambi
           </p>
         </CardContent>
       </Card>

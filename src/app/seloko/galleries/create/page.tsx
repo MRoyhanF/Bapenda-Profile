@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { ImageUpload } from "@/components/cms/image-upload";
+import { ImageUpload } from "@/components/seloko/image-upload";
 
 export default function CreateGalleryPage() {
   const router = useRouter();
@@ -26,10 +26,10 @@ export default function CreateGalleryPage() {
   const coverImage = watch("coverImage");
 
   const mutation = useMutation({
-    mutationFn: (data: GalleryInput) => api.post("/cms/galleries", data),
+    mutationFn: (data: GalleryInput) => api.post("/seloko/galleries", data),
     onSuccess: (res) => {
       toast.success("Galeri berhasil dibuat");
-      router.push(`/cms/galleries/${res.data.data.id}`);
+      router.push(`/seloko/galleries/${res.data.data.id}`);
     },
     onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal membuat galeri"),
   });
@@ -38,7 +38,7 @@ export default function CreateGalleryPage() {
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/cms/galleries"><ArrowLeft className="h-4 w-4" /></Link>
+          <Link href="/seloko/galleries"><ArrowLeft className="h-4 w-4" /></Link>
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-primary">Buat Galeri Baru</h1>
@@ -68,7 +68,7 @@ export default function CreateGalleryPage() {
         </Card>
 
         <div className="flex justify-end gap-3">
-          <Button type="button" variant="outline" asChild><Link href="/cms/galleries">Batal</Link></Button>
+          <Button type="button" variant="outline" asChild><Link href="/seloko/galleries">Batal</Link></Button>
           <Button type="submit" loading={isSubmitting}>Buat Galeri</Button>
         </div>
       </form>

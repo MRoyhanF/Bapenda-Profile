@@ -29,9 +29,9 @@ import {
   Palette,
   CreditCard,
 } from "lucide-react";
-import { DataTable, ColumnDef } from "@/components/cms/data-table";
-import { CameraScanner } from "@/components/cms/camera-scanner";
-import { DataTablePagination } from "@/components/cms/data-table-pagination";
+import { DataTable, ColumnDef } from "@/components/seloko/data-table";
+import { CameraScanner } from "@/components/seloko/camera-scanner";
+import { DataTablePagination } from "@/components/seloko/data-table-pagination";
 import { useDebounce } from "@/hooks/use-debounce";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -167,7 +167,7 @@ function CekPajakPage() {
       params.set("page", String(page));
       params.set("limit", String(pageSize));
       if (debouncedSearch) params.set("search", debouncedSearch);
-      return api.get(`/cms/pajak-kendaraan?${params.toString()}`).then((r) => r.data);
+      return api.get(`/seloko/pajak-kendaraan?${params.toString()}`).then((r) => r.data);
     },
   });
 
@@ -179,7 +179,7 @@ function CekPajakPage() {
   const checkMutation = useMutation({
     mutationFn: (licensePlate: string) =>
       api
-        .post("/cms/pajak-kendaraan", { action: "check", licensePlate })
+        .post("/seloko/pajak-kendaraan", { action: "check", licensePlate })
         .then((r) => r.data.data),
     // Lokasi & catatan sengaja tidak direset: petugas mengisinya sekali lalu
     // memakai nilai yang sama untuk beberapa kendaraan di lokasi tersebut.
@@ -192,7 +192,7 @@ function CekPajakPage() {
 
   const saveMutation = useMutation({
     mutationFn: (payload: VehicleTaxCheckInput) =>
-      api.post("/cms/pajak-kendaraan", payload),
+      api.post("/seloko/pajak-kendaraan", payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cek-pajak"] });
       toast.success("Log pengecekan berhasil disimpan");

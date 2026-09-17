@@ -8,11 +8,11 @@ interface InstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-const DISMISS_KEY = "cms-install-dismissed";
+const DISMISS_KEY = "seloko-install-dismissed";
 
 /**
  * Daftarkan service worker + tawarkan install (Android/Chrome) dan
- * tampilkan banner saat offline. Hanya dipasang di area /cms.
+ * tampilkan banner saat offline. Hanya dipasang di area /seloko.
  */
 export function PwaProvider() {
   const [installEvent, setInstallEvent] = useState<InstallPromptEvent | null>(null);
@@ -21,7 +21,7 @@ export function PwaProvider() {
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").catch(() => {
-        // SW opsional: CMS tetap jalan penuh tanpa dukungan offline.
+        // SW opsional: Seloko tetap jalan penuh tanpa dukungan offline.
       });
     }
 
@@ -76,7 +76,7 @@ export function PwaProvider() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/icons/icon-192.png" alt="" className="h-10 w-10 rounded-xl flex-shrink-0" />
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold truncate">Pasang CMS BAPENDA</p>
+            <p className="text-sm font-semibold truncate">Pasang Seloko BAPENDA</p>
             <p className="text-xs text-muted-foreground">Akses lebih cepat langsung dari layar utama</p>
           </div>
           <button

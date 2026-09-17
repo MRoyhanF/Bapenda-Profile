@@ -16,10 +16,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { uptdSchema, UptdInput } from "@/lib/validations";
-import { DataTable, ColumnDef } from "@/components/cms/data-table";
-import { DataTableFilter } from "@/components/cms/data-table-filter";
-import { DataTablePagination } from "@/components/cms/data-table-pagination";
-import { ConfirmDialog } from "@/components/cms/confirm-dialog";
+import { DataTable, ColumnDef } from "@/components/seloko/data-table";
+import { DataTableFilter } from "@/components/seloko/data-table-filter";
+import { DataTablePagination } from "@/components/seloko/data-table-pagination";
+import { ConfirmDialog } from "@/components/seloko/confirm-dialog";
 import { useDebounce } from "@/hooks/use-debounce";
 
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
@@ -131,7 +131,7 @@ function MapPreview({ lat, lng }: { lat?: number | null; lng?: number | null }) 
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-function CmsUptdPage() {
+function SelokoUptdPage() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
@@ -173,7 +173,7 @@ function CmsUptdPage() {
   // ── Data fetching ──────────────────────────────────────────────────────────
 
   const { data, isLoading } = useQuery<UptdResponse>({
-    queryKey: ["cms-uptd", page, pageSize, debouncedSearch, statusFilter, hasUsersFilter],
+    queryKey: ["seloko-uptd", page, pageSize, debouncedSearch, statusFilter, hasUsersFilter],
     queryFn: () => {
       const params = new URLSearchParams();
       params.set("page", String(page));
@@ -183,7 +183,7 @@ function CmsUptdPage() {
       if (statusFilter === "inactive") params.set("isActive", "false");
       if (hasUsersFilter === "yes") params.set("hasUsers", "true");
       if (hasUsersFilter === "no") params.set("hasUsers", "false");
-      return api.get(`/cms/uptd?${params.toString()}`).then((r) => r.data);
+      return api.get(`/seloko/uptd?${params.toString()}`).then((r) => r.data);
     },
   });
 
@@ -202,9 +202,9 @@ function CmsUptdPage() {
 
   const saveMutation = useMutation({
     mutationFn: (payload: UptdInput) =>
-      editId ? api.put(`/cms/uptd/${editId}`, payload) : api.post("/cms/uptd", payload),
+      editId ? api.put(`/seloko/uptd/${editId}`, payload) : api.post("/seloko/uptd", payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-uptd"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-uptd"] });
       toast.success(editId ? "UPTD diperbarui" : "UPTD berhasil dibuat");
       setFormOpen(false);
       reset();
@@ -215,9 +215,9 @@ function CmsUptdPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => api.delete(`/cms/uptd/${id}`),
+    mutationFn: (id: number) => api.delete(`/seloko/uptd/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-uptd"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-uptd"] });
       toast.success("UPTD dihapus");
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
@@ -305,7 +305,7 @@ function CmsUptdPage() {
       header: "Nama UPTD",
       render: (u) => (
         <Link
-          href={`/cms/uptd/${u.id}`}
+          href={`/seloko/uptd/${u.id}`}
           className="font-medium text-primary hover:underline underline-offset-4 transition-colors"
         >
           {u.name}
@@ -660,5 +660,5 @@ function CmsUptdPage() {
 }
 
 export default function Page() {
-  return <Suspense><CmsUptdPage /></Suspense>;
+  return <Suspense><SelokoUptdPage /></Suspense>;
 }

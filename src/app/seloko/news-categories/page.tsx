@@ -12,10 +12,10 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import { useAuthStore } from "@/store";
-import { ConfirmDialog } from "@/components/cms/confirm-dialog";
-import { DataTableFilter } from "@/components/cms/data-table-filter";
-import { DataTable, ColumnDef } from "@/components/cms/data-table";
-import { DataTablePagination } from "@/components/cms/data-table-pagination";
+import { ConfirmDialog } from "@/components/seloko/confirm-dialog";
+import { DataTableFilter } from "@/components/seloko/data-table-filter";
+import { DataTable, ColumnDef } from "@/components/seloko/data-table";
+import { DataTablePagination } from "@/components/seloko/data-table-pagination";
 import { useDebounce } from "@/hooks/use-debounce";
 
 
@@ -35,7 +35,7 @@ type CategoryResponse = {
   meta: { page: number; limit: number; totalItems: number; totalPages: number };
 };
 
-function CmsNewsCategoriesPage() {
+function SelokoNewsCategoriesPage() {
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -70,14 +70,14 @@ function CmsNewsCategoriesPage() {
   }, [debouncedSearch]);
 
   const { data, isLoading } = useQuery<CategoryResponse>({
-    queryKey: ["cms-news-categories-list", page, pageSize, debouncedSearch, activeFilter],
+    queryKey: ["seloko-news-categories-list", page, pageSize, debouncedSearch, activeFilter],
     queryFn: () => {
       const params = new URLSearchParams();
       params.set("page", String(page));
       params.set("limit", String(pageSize));
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (activeFilter !== "all") params.set("isActive", activeFilter);
-      return api.get(`/cms/news-categories?${params.toString()}`).then((r) => r.data);
+      return api.get(`/seloko/news-categories?${params.toString()}`).then((r) => r.data);
     },
   });
 
@@ -85,9 +85,9 @@ function CmsNewsCategoriesPage() {
   const meta = data?.meta;
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => api.delete(`/cms/news-categories/${id}`),
+    mutationFn: (id: number) => api.delete(`/seloko/news-categories/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-news-categories-list"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-news-categories-list"] });
       queryClient.invalidateQueries({ queryKey: ["news-categories"] });
       toast.success("Kategori berhasil dihapus");
       setDeleteTarget(null);
@@ -181,11 +181,11 @@ function CmsNewsCategoriesPage() {
       render: (item) => (
         <div className="flex items-center justify-end gap-1">
           <Button size="sm" variant="outline" asChild title="Detail">
-            <Link href={`/cms/news-categories/${item.id}`}><Eye className="h-3 w-3" /></Link>
+            <Link href={`/seloko/news-categories/${item.id}`}><Eye className="h-3 w-3" /></Link>
           </Button>
           {canManage && (
             <Button size="sm" variant="outline" asChild title="Edit">
-              <Link href={`/cms/news-categories/${item.id}/edit`}><Pencil className="h-3 w-3" /></Link>
+              <Link href={`/seloko/news-categories/${item.id}/edit`}><Pencil className="h-3 w-3" /></Link>
             </Button>
           )}
           {canManage && (
@@ -224,7 +224,7 @@ function CmsNewsCategoriesPage() {
         </div>
         {canManage && (
           <Button asChild>
-            <Link href="/cms/news-categories/create"><Plus className="mr-2 h-4 w-4" />Tambah Kategori</Link>
+            <Link href="/seloko/news-categories/create"><Plus className="mr-2 h-4 w-4" />Tambah Kategori</Link>
           </Button>
         )}
       </div>
@@ -281,5 +281,5 @@ function CmsNewsCategoriesPage() {
 }
 
 export default function Page() {
-  return <Suspense><CmsNewsCategoriesPage /></Suspense>;
+  return <Suspense><SelokoNewsCategoriesPage /></Suspense>;
 }

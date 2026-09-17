@@ -19,8 +19,8 @@ import { toast } from "sonner";
 import { ArrowLeft, Send, CheckCircle, XCircle, Eye } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { ImageUpload } from "@/components/cms/image-upload";
-import { RichTextEditor } from "@/components/cms/rich-text-editor";
+import { ImageUpload } from "@/components/seloko/image-upload";
+import { RichTextEditor } from "@/components/seloko/rich-text-editor";
 import { useAuthStore } from "@/store";
 import { ContentStatus } from "@prisma/client";
 
@@ -38,13 +38,13 @@ export default function EditNewsPage() {
   const queryClient = useQueryClient();
 
   const { data: newsData, isLoading } = useQuery({
-    queryKey: ["cms-news-detail", id],
-    queryFn: () => api.get(`/cms/news/${id}`).then((r) => r.data.data),
+    queryKey: ["seloko-news-detail", id],
+    queryFn: () => api.get(`/seloko/news/${id}`).then((r) => r.data.data),
   });
 
   const { data: categories } = useQuery({
     queryKey: ["news-categories"],
-    queryFn: () => api.get("/cms/news-categories").then((r) => r.data.data),
+    queryFn: () => api.get("/seloko/news-categories").then((r) => r.data.data),
   });
 
   const {
@@ -78,20 +78,20 @@ export default function EditNewsPage() {
   }, [newsData, reset]);
 
   const updateMutation = useMutation({
-    mutationFn: (data: NewsInput) => api.put(`/cms/news/${id}`, data),
+    mutationFn: (data: NewsInput) => api.put(`/seloko/news/${id}`, data),
     onSuccess: () => {
       toast.success("Berita berhasil diperbarui");
-      queryClient.invalidateQueries({ queryKey: ["cms-news-detail", id] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-news-detail", id] });
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
       toast.error(err.response?.data?.message || "Gagal menyimpan"),
   });
 
   const actionMutation = useMutation({
-    mutationFn: (action: string) => api.patch(`/cms/news/${id}`, { action }),
+    mutationFn: (action: string) => api.patch(`/seloko/news/${id}`, { action }),
     onSuccess: (_, action) => {
-      queryClient.invalidateQueries({ queryKey: ["cms-news-detail", id] });
-      queryClient.invalidateQueries({ queryKey: ["cms-news"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-news-detail", id] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-news"] });
       const msgs: Record<string, string> = {
         submit: "Dikirim untuk review", approve: "Disetujui", reject: "Ditolak",
         publish: "Dipublikasi", unpublish: "Dibatalkan",
@@ -116,7 +116,7 @@ export default function EditNewsPage() {
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/cms/news"><ArrowLeft className="h-4 w-4" /></Link>
+          <Link href="/seloko/news"><ArrowLeft className="h-4 w-4" /></Link>
         </Button>
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-primary">Edit Berita</h1>
@@ -254,7 +254,7 @@ export default function EditNewsPage() {
             {canEdit && (
               <div className="flex justify-end gap-3">
                 <Button type="button" variant="outline" asChild>
-                  <Link href="/cms/news">Batal</Link>
+                  <Link href="/seloko/news">Batal</Link>
                 </Button>
                 <Button type="submit" loading={isSubmitting || updateMutation.isPending}>Simpan Perubahan</Button>
               </div>

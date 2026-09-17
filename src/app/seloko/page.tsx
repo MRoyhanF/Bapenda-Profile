@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
-export default function CmsRootPage() {
-  redirect("/cms/dashboard");
+export default function SelokoRootPage() {
+  redirect("/seloko/dashboard");
 }

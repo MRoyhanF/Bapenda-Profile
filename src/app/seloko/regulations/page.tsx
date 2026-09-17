@@ -16,12 +16,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Plus, Pencil, Trash2, Eye, Download, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/utils";
-import { ConfirmDialog } from "@/components/cms/confirm-dialog";
-import { DataTableFilter } from "@/components/cms/data-table-filter";
-import { DataTable, ColumnDef } from "@/components/cms/data-table";
-import { DataTablePagination } from "@/components/cms/data-table-pagination";
-import { PdfUpload } from "@/components/cms/pdf-upload";
-import { PdfPreviewDialog } from "@/components/cms/pdf-preview-dialog";
+import { ConfirmDialog } from "@/components/seloko/confirm-dialog";
+import { DataTableFilter } from "@/components/seloko/data-table-filter";
+import { DataTable, ColumnDef } from "@/components/seloko/data-table";
+import { DataTablePagination } from "@/components/seloko/data-table-pagination";
+import { PdfUpload } from "@/components/seloko/pdf-upload";
+import { PdfPreviewDialog } from "@/components/seloko/pdf-preview-dialog";
 import { useDebounce } from "@/hooks/use-debounce";
 
 import { regulationSchema, RegulationInput } from "@/lib/validations";
@@ -65,7 +65,7 @@ const defaultValues: RegulationInput = {
   status: "DRAFT",
 };
 
-function CmsRegulationsPage() {
+function SelokoRegulationsPage() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
@@ -115,14 +115,14 @@ function CmsRegulationsPage() {
   // ── Data fetching ──────────────────────────────────────────────────────────
 
   const { data, isLoading } = useQuery<RegulationResponse>({
-    queryKey: ["cms-regulations", page, pageSize, debouncedSearch, statusFilter],
+    queryKey: ["seloko-regulations", page, pageSize, debouncedSearch, statusFilter],
     queryFn: () => {
       const params = new URLSearchParams();
       params.set("page", String(page));
       params.set("limit", String(pageSize));
       if (debouncedSearch) params.set("search", debouncedSearch);
       if (statusFilter !== "all") params.set("status", statusFilter);
-      return api.get(`/cms/regulations?${params.toString()}`).then((r) => r.data);
+      return api.get(`/seloko/regulations?${params.toString()}`).then((r) => r.data);
     },
   });
 
@@ -135,11 +135,11 @@ function CmsRegulationsPage() {
     mutationFn: (payload: RegulationInput & { oldFileId?: string }) => {
       const { oldFileId, ...body } = payload;
       return editItem
-        ? api.put(`/cms/regulations/${editItem.id}`, { ...body, oldFileId })
-        : api.post("/cms/regulations", body);
+        ? api.put(`/seloko/regulations/${editItem.id}`, { ...body, oldFileId })
+        : api.post("/seloko/regulations", body);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-regulations"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-regulations"] });
       toast.success(editItem ? "Regulasi diperbarui" : "Regulasi dibuat");
       setFormOpen(false);
       setEditItem(null);
@@ -150,9 +150,9 @@ function CmsRegulationsPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => api.delete(`/cms/regulations/${id}`),
+    mutationFn: (id: number) => api.delete(`/seloko/regulations/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-regulations"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-regulations"] });
       toast.success("Regulasi dihapus");
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
@@ -416,5 +416,5 @@ function CmsRegulationsPage() {
 }
 
 export default function Page() {
-  return <Suspense><CmsRegulationsPage /></Suspense>;
+  return <Suspense><SelokoRegulationsPage /></Suspense>;
 }

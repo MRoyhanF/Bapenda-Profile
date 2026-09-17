@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DatePicker } from "@/components/ui/date-picker";
 import { CheckCircle2, XCircle, MapPin, SlidersHorizontal } from "lucide-react";
-import { DataTable, ColumnDef } from "@/components/cms/data-table";
-import { DataTableFilter } from "@/components/cms/data-table-filter";
-import { DataTablePagination } from "@/components/cms/data-table-pagination";
+import { DataTable, ColumnDef } from "@/components/seloko/data-table";
+import { DataTableFilter } from "@/components/seloko/data-table-filter";
+import { DataTablePagination } from "@/components/seloko/data-table-pagination";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Role } from "@prisma/client";
 
@@ -67,7 +67,7 @@ function LogPajakPage() {
         params.set("dateFrom", tanggal);
         params.set("dateTo", tanggal);
       }
-      return api.get(`/cms/pajak-kendaraan?${params}`).then((r) => r.data);
+      return api.get(`/seloko/pajak-kendaraan?${params}`).then((r) => r.data);
     },
   });
 

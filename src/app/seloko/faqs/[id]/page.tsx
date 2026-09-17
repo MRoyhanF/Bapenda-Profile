@@ -33,8 +33,8 @@ export default function FaqDetailPage() {
   const { user } = useAuthStore();
 
   const { data: faq, isLoading } = useQuery<FaqDetail>({
-    queryKey: ["cms-faq-detail", id],
-    queryFn: () => api.get(`/cms/faqs/${id}`).then((r) => r.data.data),
+    queryKey: ["seloko-faq-detail", id],
+    queryFn: () => api.get(`/seloko/faqs/${id}`).then((r) => r.data.data),
   });
 
   const canManage = user?.role === "Super_Admin" || user?.role === "Admin";
@@ -59,7 +59,7 @@ export default function FaqDetailPage() {
     <div className="space-y-6 max-w-3xl">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/cms/faqs"><ArrowLeft className="h-4 w-4" /></Link>
+          <Link href="/seloko/faqs"><ArrowLeft className="h-4 w-4" /></Link>
         </Button>
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-primary">Detail FAQ</h1>
@@ -72,7 +72,7 @@ export default function FaqDetailPage() {
         </div>
         {canManage && (
           <Button asChild>
-            <Link href={`/cms/faqs/${id}/edit`}><Pencil className="mr-2 h-4 w-4" />Edit</Link>
+            <Link href={`/seloko/faqs/${id}/edit`}><Pencil className="mr-2 h-4 w-4" />Edit</Link>
           </Button>
         )}
       </div>

@@ -68,7 +68,7 @@ function shouldShowTagihan(tgAkhirPkb: string): boolean {
 }
 
 
-// ─── GET /api/cms/pajak-kendaraan — list logs ────────────────────────────────
+// ─── GET /api/seloko/pajak-kendaraan — list logs ────────────────────────────────
 
 export const GET = withErrorHandler(async (request: NextRequest) => {
   const user = await getAuthUser();
@@ -102,7 +102,7 @@ export const GET = withErrorHandler(async (request: NextRequest) => {
   return ApiResponse.paginated(data, buildMeta(page, limit, total));
 });
 
-// ─── POST /api/cms/pajak-kendaraan — check nopol atau save log ───────────────
+// ─── POST /api/seloko/pajak-kendaraan — check nopol atau save log ───────────────
 
 export const POST = withErrorHandler(async (request: NextRequest) => {
   const user = await getAuthUser();

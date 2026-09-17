@@ -17,7 +17,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ArrowLeft, Loader2, Plus, Trash2, Send, CheckCircle, XCircle, Eye, Upload } from "lucide-react";
 import Link from "next/link";
-import { ImageUpload } from "@/components/cms/image-upload";
+import { ImageUpload } from "@/components/seloko/image-upload";
 import { useAuthStore } from "@/store";
 import { FallbackImage } from "@/components/ui/fallback-image";
 
@@ -27,8 +27,8 @@ export default function EditGalleryPage() {
   const queryClient = useQueryClient();
 
   const { data: gallery, isLoading } = useQuery({
-    queryKey: ["cms-gallery-detail", id],
-    queryFn: () => api.get(`/cms/galleries/${id}`).then((r) => r.data.data),
+    queryKey: ["seloko-gallery-detail", id],
+    queryFn: () => api.get(`/seloko/galleries/${id}`).then((r) => r.data.data),
   });
 
   const { register, handleSubmit, setValue, watch, reset, formState: { isSubmitting } } = useForm<GalleryInput>({
@@ -46,16 +46,16 @@ export default function EditGalleryPage() {
   }, [gallery, reset]);
 
   const updateMutation = useMutation({
-    mutationFn: (data: GalleryInput) => api.put(`/cms/galleries/${id}`, data),
-    onSuccess: () => { toast.success("Galeri diperbarui"); queryClient.invalidateQueries({ queryKey: ["cms-gallery-detail", id] }); },
+    mutationFn: (data: GalleryInput) => api.put(`/seloko/galleries/${id}`, data),
+    onSuccess: () => { toast.success("Galeri diperbarui"); queryClient.invalidateQueries({ queryKey: ["seloko-gallery-detail", id] }); },
     onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal"),
   });
 
   const actionMutation = useMutation({
-    mutationFn: (action: string) => api.patch(`/cms/galleries/${id}`, { action }),
+    mutationFn: (action: string) => api.patch(`/seloko/galleries/${id}`, { action }),
     onSuccess: (_, action) => {
-      queryClient.invalidateQueries({ queryKey: ["cms-gallery-detail", id] });
-      queryClient.invalidateQueries({ queryKey: ["cms-galleries"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-gallery-detail", id] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-galleries"] });
       const msgs: Record<string, string> = { submit: "Dikirim untuk review", approve: "Disetujui", reject: "Ditolak", publish: "Dipublikasi", unpublish: "Dibatalkan" };
       toast.success(msgs[action] || "Berhasil");
     },
@@ -63,13 +63,13 @@ export default function EditGalleryPage() {
   });
 
   const addItemMutation = useMutation({
-    mutationFn: (fileUrl: string) => api.post(`/cms/galleries/${id}/items`, { mediaType: "IMAGE", fileUrl }),
+    mutationFn: (fileUrl: string) => api.post(`/seloko/galleries/${id}/items`, { mediaType: "IMAGE", fileUrl }),
     onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal menambah foto"),
   });
 
   const deleteItemMutation = useMutation({
-    mutationFn: (itemId: number) => api.delete(`/cms/galleries/${id}/items/${itemId}`),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["cms-gallery-detail", id] }); toast.success("Item dihapus"); },
+    mutationFn: (itemId: number) => api.delete(`/seloko/galleries/${id}/items/${itemId}`),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["seloko-gallery-detail", id] }); toast.success("Item dihapus"); },
     onError: (err: { response?: { data?: { message?: string } } }) => toast.error(err.response?.data?.message || "Gagal"),
   });
 
@@ -104,7 +104,7 @@ export default function EditGalleryPage() {
   async function handleSaveAllItems() {
     if (!pendingUrls.length) return;
     await Promise.all(pendingUrls.map((url) => addItemMutation.mutateAsync(url)));
-    queryClient.invalidateQueries({ queryKey: ["cms-gallery-detail", id] });
+    queryClient.invalidateQueries({ queryKey: ["seloko-gallery-detail", id] });
     setPendingUrls([]);
     setAddingItem(false);
     toast.success(`${pendingUrls.length} foto berhasil ditambahkan`);
@@ -118,7 +118,7 @@ export default function EditGalleryPage() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild><Link href="/cms/galleries"><ArrowLeft className="h-4 w-4" /></Link></Button>
+        <Button variant="ghost" size="icon" asChild><Link href="/seloko/galleries"><ArrowLeft className="h-4 w-4" /></Link></Button>
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-primary">Edit Galeri</h1>
           <Badge variant={status === "PUBLISHED" ? "success" : status === "REJECTED" ? "destructive" : "outline"} className="mt-1">{status}</Badge>
@@ -155,8 +155,8 @@ export default function EditGalleryPage() {
                 onChange={async (url) => {
                   setValue("coverImage", url);
                   try {
-                    await api.patch(`/cms/galleries/${id}`, { action: "set-cover", coverImage: url });
-                    queryClient.invalidateQueries({ queryKey: ["cms-gallery-detail", id] });
+                    await api.patch(`/seloko/galleries/${id}`, { action: "set-cover", coverImage: url });
+                    queryClient.invalidateQueries({ queryKey: ["seloko-gallery-detail", id] });
                     toast.success("Cover berhasil disimpan");
                   } catch {
                     toast.error("Gagal menyimpan cover");

@@ -1,7 +1,7 @@
-// Service worker CMS BAPENDA — PWA installable + fallback offline.
+// Service worker Seloko BAPENDA — PWA installable + fallback offline.
 // ponytail: cache statis app-shell saja. Ganti dengan Workbox bila butuh
 // strategi per-route (stale-while-revalidate untuk API, dsb).
-const CACHE = "cms-bapenda-v1";
+const CACHE = "seloko-bapenda-v1";
 const OFFLINE_URL = "/offline.html";
 
 self.addEventListener("install", (event) => {
@@ -22,7 +22,7 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const req = event.request;
-  // Hanya navigasi yang di-handle: data CMS harus selalu segar, tidak di-cache.
+  // Hanya navigasi yang di-handle: data Seloko harus selalu segar, tidak di-cache.
   if (req.mode !== "navigate") return;
 
   event.respondWith(

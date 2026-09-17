@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, Users, UserCheck, UserX, ShieldCheck, Wrench, MapPin, ExternalLink } from "lucide-react";
-import { DataTable, ColumnDef } from "@/components/cms/data-table";
+import { DataTable, ColumnDef } from "@/components/seloko/data-table";
 import { Role } from "@prisma/client";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -148,8 +148,8 @@ export default function UptdDetailPage() {
   const router = useRouter();
 
   const { data, isLoading, isError } = useQuery<{ data: UptdDetail }>({
-    queryKey: ["cms-uptd-detail", id],
-    queryFn: () => api.get(`/cms/uptd/${id}`).then((r) => r.data),
+    queryKey: ["seloko-uptd-detail", id],
+    queryFn: () => api.get(`/seloko/uptd/${id}`).then((r) => r.data),
     enabled: !!id,
   });
 

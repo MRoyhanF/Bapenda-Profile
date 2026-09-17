@@ -7,9 +7,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSidebarStore, useAuthStore } from "@/store";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import NextImage from "next/image";
-import { visibleNavItems, isNavActive } from "@/components/cms/nav-items";
+import { visibleNavItems, isNavActive } from "@/components/seloko/nav-items";
 
-export function CmsSidebar() {
+export function SelokoSidebar() {
   const pathname = usePathname();
   const { isOpen, toggle } = useSidebarStore();
   const { user } = useAuthStore();
@@ -27,7 +27,7 @@ export function CmsSidebar() {
       {/* Logo */}
       <div className="flex h-16 items-center justify-between px-4 border-b border-primary-600">
         {isOpen && (
-          <Link href="/cms/dashboard" className="flex items-center gap-2 min-w-0">
+          <Link href="/seloko/dashboard" className="flex items-center gap-2 min-w-0">
             <NextImage
               src="/icons/logo.png"
               alt="Logo BAPENDA"
@@ -35,7 +35,7 @@ export function CmsSidebar() {
               height={32}
               className="flex-shrink-0 rounded-md"
             />
-            <span className="text-sm font-semibold leading-tight truncate">BAPENDA Jambi</span>
+            <span className="text-sm font-semibold leading-tight truncate">Seloko</span>
           </Link>
         )}
         {!isOpen && (

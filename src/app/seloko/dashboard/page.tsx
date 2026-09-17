@@ -61,7 +61,7 @@ export default function DashboardPage() {
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ["dashboard-stats"],
-    queryFn: () => api.get("/cms/dashboard/stats").then((r) => r.data.data),
+    queryFn: () => api.get("/seloko/dashboard/stats").then((r) => r.data.data),
   });
 
   const currentHour = new Date().getHours();
@@ -118,7 +118,7 @@ export default function DashboardPage() {
           {greeting}, {user?.name?.split(" ")[0]} 👋
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
-          {formatDate(new Date())} — Selamat datang di CMS BAPENDA Provinsi Jambi
+          {formatDate(new Date())} — Selamat datang di Seloko BAPENDA Provinsi Jambi
         </p>
       </div>
 

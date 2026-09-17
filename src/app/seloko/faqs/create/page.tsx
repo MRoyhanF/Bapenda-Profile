@@ -25,7 +25,7 @@ export default function CreateFaqPage() {
 
   const { data: categories } = useQuery<FaqCategory[]>({
     queryKey: ["faq-categories"],
-    queryFn: () => api.get("/cms/faq-categories?limit=100").then((r) => r.data.data),
+    queryFn: () => api.get("/seloko/faq-categories?limit=100").then((r) => r.data.data),
   });
 
   const {
@@ -43,13 +43,13 @@ export default function CreateFaqPage() {
   const isPublished = watch("isPublished") ?? false;
 
   const mutation = useMutation({
-    mutationFn: (data: FaqInput) => api.post("/cms/faqs", data),
+    mutationFn: (data: FaqInput) => api.post("/seloko/faqs", data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-faqs"] });
-      queryClient.invalidateQueries({ queryKey: ["cms-faq-categories-list"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-faqs"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-faq-categories-list"] });
       queryClient.invalidateQueries({ queryKey: ["faq-categories"] });
       toast.success("FAQ berhasil dibuat");
-      router.push("/cms/faqs");
+      router.push("/seloko/faqs");
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
       toast.error(err.response?.data?.message || "Gagal membuat FAQ"),
@@ -59,7 +59,7 @@ export default function CreateFaqPage() {
     <div className="space-y-6 max-w-3xl">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/cms/faqs"><ArrowLeft className="h-4 w-4" /></Link>
+          <Link href="/seloko/faqs"><ArrowLeft className="h-4 w-4" /></Link>
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-primary">Tambah FAQ Baru</h1>
@@ -145,7 +145,7 @@ export default function CreateFaqPage() {
 
         <div className="flex justify-end gap-3">
           <Button type="button" variant="outline" asChild>
-            <Link href="/cms/faqs">Batal</Link>
+            <Link href="/seloko/faqs">Batal</Link>
           </Button>
           <Button type="submit" loading={isSubmitting || mutation.isPending}>
             {isPublished ? "Simpan & Publikasi" : "Simpan sebagai Draft"}

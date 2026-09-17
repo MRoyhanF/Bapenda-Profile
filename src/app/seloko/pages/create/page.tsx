@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Eye } from "lucide-react";
 import Link from "next/link";
-import { RichTextEditor } from "@/components/cms/rich-text-editor";
+import { RichTextEditor } from "@/components/seloko/rich-text-editor";
 import { slugify } from "@/lib/utils";
 
 export default function CreatePagePage() {
@@ -44,10 +44,10 @@ export default function CreatePagePage() {
   }
 
   const mutation = useMutation({
-    mutationFn: (data: PageInput) => api.post("/cms/pages", data),
+    mutationFn: (data: PageInput) => api.post("/seloko/pages", data),
     onSuccess: (res) => {
       toast.success("Halaman berhasil dibuat");
-      router.push(`/cms/pages/${res.data.data.id}/edit`);
+      router.push(`/seloko/pages/${res.data.data.id}/edit`);
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
       toast.error(err.response?.data?.message || "Gagal membuat halaman"),
@@ -57,7 +57,7 @@ export default function CreatePagePage() {
     <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/cms/pages">
+          <Link href="/seloko/pages">
             <ArrowLeft className="h-4 w-4" />
           </Link>
         </Button>
@@ -165,7 +165,7 @@ export default function CreatePagePage() {
 
             <div className="flex justify-end gap-3">
               <Button type="button" variant="outline" asChild>
-                <Link href="/cms/pages">Batal</Link>
+                <Link href="/seloko/pages">Batal</Link>
               </Button>
               <Button type="submit" loading={isSubmitting || mutation.isPending}>
                 Simpan Halaman

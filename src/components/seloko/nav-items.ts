@@ -15,21 +15,21 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { href: "/cms/dashboard", label: "Dashboard", shortLabel: "Beranda", icon: LayoutDashboard },
-  { href: "/cms/pajak-kendaraan", label: "Cek Pajak", icon: Car, roles: ["Petugas"] },
-  { href: "/cms/log-pajak", label: "Log Cek Pajak", shortLabel: "Log Pajak", icon: ClipboardList, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/news", label: "Berita", icon: Newspaper, roles: ["Super_Admin", "Admin", "Editor", "Ketua_Uptd", "Admin_Uptd"] },
-  { href: "/cms/galleries", label: "Galeri", icon: Images, roles: ["Super_Admin", "Admin", "Editor", "Ketua_Uptd", "Admin_Uptd"] },
-  { href: "/cms/news-categories", label: "Kategori Berita", icon: Tag, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/faqs", label: "FAQ", icon: HelpCircle, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/faq-categories", label: "Kategori FAQ", icon: ScrollText, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/pages", label: "Halaman", icon: FileText, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/regulations", label: "Regulasi", icon: Shield, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/banners", label: "Banner", icon: Image, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/uptd", label: "UPTD", icon: Building2, roles: ["Super_Admin"] },
-  { href: "/cms/users", label: "Pengguna", icon: Users, roles: ["Super_Admin", "Admin"] },
-  { href: "/cms/settings", label: "Pengaturan", icon: Settings, roles: ["Super_Admin"] },
-  { href: "/cms/profile", label: "Profil Saya", shortLabel: "Profil", icon: User },
+  { href: "/seloko/dashboard", label: "Dashboard", shortLabel: "Beranda", icon: LayoutDashboard },
+  { href: "/seloko/pajak-kendaraan", label: "Cek Pajak", icon: Car, roles: ["Petugas"] },
+  { href: "/seloko/log-pajak", label: "Log Cek Pajak", shortLabel: "Log Pajak", icon: ClipboardList, roles: ["Super_Admin", "Admin"] },
+  { href: "/seloko/news", label: "Berita", icon: Newspaper, roles: ["Super_Admin", "Admin", "Editor", "Ketua_Uptd", "Admin_Uptd"] },
+  { href: "/seloko/galleries", label: "Galeri", icon: Images, roles: ["Super_Admin", "Admin", "Editor", "Ketua_Uptd", "Admin_Uptd"] },
+  { href: "/seloko/news-categories", label: "Kategori Berita", icon: Tag, roles: ["Super_Admin", "Admin"] },
+  { href: "/seloko/faqs", label: "FAQ", icon: HelpCircle, roles: ["Super_Admin", "Admin"] },
+  { href: "/seloko/faq-categories", label: "Kategori FAQ", icon: ScrollText, roles: ["Super_Admin", "Admin"] },
+  { href: "/seloko/pages", label: "Halaman", icon: FileText, roles: ["Super_Admin", "Admin"] },
+  { href: "/seloko/regulations", label: "Regulasi", icon: Shield, roles: ["Super_Admin", "Admin"] },
+  { href: "/seloko/banners", label: "Banner", icon: Image, roles: ["Super_Admin", "Admin"] },
+  { href: "/seloko/uptd", label: "UPTD", icon: Building2, roles: ["Super_Admin"] },
+  { href: "/seloko/users", label: "Pengguna", icon: Users, roles: ["Super_Admin", "Admin"] },
+  { href: "/seloko/settings", label: "Pengaturan", icon: Settings, roles: ["Super_Admin"] },
+  { href: "/seloko/profile", label: "Profil Saya", shortLabel: "Profil", icon: User },
 ];
 
 /** Menu yang boleh dilihat role tertentu; urutannya sudah prioritas tampilan. */

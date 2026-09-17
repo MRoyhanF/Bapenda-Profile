@@ -19,10 +19,10 @@ import { registerSchema, RegisterInput } from "@/lib/validations";
 import { Role } from "@prisma/client";
 import { useAuthStore } from "@/store";
 import { z } from "zod";
-import { DataTable, ColumnDef } from "@/components/cms/data-table";
-import { DataTableFilter } from "@/components/cms/data-table-filter";
-import { DataTablePagination } from "@/components/cms/data-table-pagination";
-import { ConfirmDialog } from "@/components/cms/confirm-dialog";
+import { DataTable, ColumnDef } from "@/components/seloko/data-table";
+import { DataTableFilter } from "@/components/seloko/data-table-filter";
+import { DataTablePagination } from "@/components/seloko/data-table-pagination";
+import { ConfirmDialog } from "@/components/seloko/confirm-dialog";
 import { useDebounce } from "@/hooks/use-debounce";
 
 
@@ -89,7 +89,7 @@ function formatDate(iso: string): string {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-function CmsUsersPage() {
+function SelokoUsersPage() {
   const { user: me } = useAuthStore();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -139,7 +139,7 @@ function CmsUsersPage() {
   // ── Data fetching ──────────────────────────────────────────────────────────
 
   const { data, isLoading } = useQuery<UserResponse>({
-    queryKey: ["cms-users", page, pageSize, debouncedSearch, roleFilter, statusFilter],
+    queryKey: ["seloko-users", page, pageSize, debouncedSearch, roleFilter, statusFilter],
     queryFn: () => {
       const params = new URLSearchParams();
       params.set("page", String(page));
@@ -148,13 +148,13 @@ function CmsUsersPage() {
       if (roleFilter !== "all") params.set("role", roleFilter);
       if (statusFilter === "active") params.set("isActive", "true");
       if (statusFilter === "inactive") params.set("isActive", "false");
-      return api.get(`/cms/users?${params.toString()}`).then((r) => r.data);
+      return api.get(`/seloko/users?${params.toString()}`).then((r) => r.data);
     },
   });
 
   const { data: uptds } = useQuery<Uptd[]>({
     queryKey: ["uptds"],
-    queryFn: () => api.get("/cms/uptd").then((r) => r.data.data),
+    queryFn: () => api.get("/seloko/uptd").then((r) => r.data.data),
   });
 
   const users = data?.data ?? [];
@@ -164,9 +164,9 @@ function CmsUsersPage() {
   // ── Mutations ──────────────────────────────────────────────────────────────
 
   const createMutation = useMutation({
-    mutationFn: (payload: RegisterInput) => api.post("/cms/users", payload),
+    mutationFn: (payload: RegisterInput) => api.post("/seloko/users", payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-users"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-users"] });
       toast.success("Pengguna berhasil dibuat");
       setCreateOpen(false);
       createReset();
@@ -176,9 +176,9 @@ function CmsUsersPage() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => api.delete(`/cms/users/${id}`),
+    mutationFn: (id: number) => api.delete(`/seloko/users/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cms-users"] });
+      queryClient.invalidateQueries({ queryKey: ["seloko-users"] });
       toast.success("Pengguna dihapus");
     },
     onError: (err: { response?: { data?: { message?: string } } }) =>
@@ -187,7 +187,7 @@ function CmsUsersPage() {
 
   const resetPasswordMutation = useMutation({
     mutationFn: ({ id, newPassword }: { id: number; newPassword: string }) =>
-      api.post(`/cms/users/${id}/reset-password`, { newPassword }),
+      api.post(`/seloko/users/${id}/reset-password`, { newPassword }),
     onSuccess: () => {
       toast.success("Password berhasil direset");
       setResetOpen(false);
@@ -323,7 +323,7 @@ function CmsUsersPage() {
       render: (u) => (
         <div className="flex items-center justify-end gap-1">
           <Button size="sm" variant="outline" asChild title="Edit">
-            <a href={`/cms/users/${u.id}`}>
+            <a href={`/seloko/users/${u.id}`}>
               <Pencil className="h-3 w-3" />
             </a>
           </Button>
@@ -360,7 +360,7 @@ function CmsUsersPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-primary">Manajemen Pengguna</h1>
-          <p className="text-sm text-muted-foreground">Kelola akun pengguna CMS</p>
+          <p className="text-sm text-muted-foreground">Kelola akun pengguna Seloko</p>
         </div>
         {isSuperAdmin && (
           <Button onClick={openCreate} className="w-fit">
@@ -527,5 +527,5 @@ function CmsUsersPage() {
 }
 
 export default function Page() {
-  return <Suspense><CmsUsersPage /></Suspense>;
+  return <Suspense><SelokoUsersPage /></Suspense>;
 }
