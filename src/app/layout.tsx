@@ -22,6 +22,9 @@ export const metadata: Metadata = {
     template: "%s | BAPENDA Provinsi Jambi",
   },
   description: "Website Resmi Badan Pendapatan Daerah Provinsi Jambi",
+  // Wajib agar browser menemukan manifest — tanpa ini nama/ikon PWA tidak
+  // pernah ter-update di perangkat yang sudah memasang aplikasi.
+  manifest: "/manifest.webmanifest",
   keywords: ["bapenda", "jambi", "pajak", "samsat", "pkb"],
   authors: [{ name: "BAPENDA Provinsi Jambi" }],
   creator: "BAPENDA Provinsi Jambi",
