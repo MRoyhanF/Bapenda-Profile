@@ -16,9 +16,9 @@ import { updateUserSchema, changePasswordSchema, UpdateUserInput, ChangePassword
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
-import { Eye, EyeOff, LogOut, Download, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, LogOut, Download, CheckCircle2, RefreshCw } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useInstallApp } from "@/components/seloko/pwa-provider";
+import { useInstallApp, useAppUpdate } from "@/components/seloko/pwa-provider";
 
 export default function SelokoProfilePage() {
   const { user: storeUser, setUser, clearUser } = useAuthStore();
@@ -28,6 +28,7 @@ export default function SelokoProfilePage() {
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const { canInstall, installed, install } = useInstallApp();
+  const { updateReady, updating, applyUpdate } = useAppUpdate();
 
   const { data: me, isLoading } = useQuery({
     queryKey: ["me"],
@@ -191,27 +192,42 @@ export default function SelokoProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Install PWA: cadangan bila banner install sudah ditutup. */}
+      {/* Install & update PWA: cadangan bila banner install sudah ditutup. */}
       <Card>
         <CardHeader><CardTitle className="text-base">Aplikasi SELOKO</CardTitle></CardHeader>
-        <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-muted-foreground">
-            {installed
-              ? "Aplikasi sudah terpasang di perangkat ini."
-              : canInstall
-                ? "Pasang SELOKO agar bisa dibuka langsung dari layar utama."
-                : "Buka menu browser lalu pilih \u201cTambahkan ke layar utama\u201d untuk memasang aplikasi."}
-          </p>
-          {installed ? (
-            <span className="flex items-center gap-1.5 text-sm font-medium text-green-600">
-              <CheckCircle2 className="h-4 w-4" />
-              Terpasang
-            </span>
-          ) : (
-            <Button type="button" onClick={install} disabled={!canInstall} className="sm:w-auto">
-              <Download className="mr-2 h-4 w-4" />
-              Pasang Aplikasi
-            </Button>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-muted-foreground">
+              {installed
+                ? "Aplikasi sudah terpasang di perangkat ini."
+                : canInstall
+                  ? "Pasang SELOKO agar bisa dibuka langsung dari layar utama."
+                  : "Buka menu browser lalu pilih \u201cTambahkan ke layar utama\u201d untuk memasang aplikasi."}
+            </p>
+            {installed ? (
+              <span className="flex items-center gap-1.5 text-sm font-medium text-green-600">
+                <CheckCircle2 className="h-4 w-4" />
+                Terpasang
+              </span>
+            ) : (
+              <Button type="button" onClick={install} disabled={!canInstall} className="sm:w-auto">
+                <Download className="mr-2 h-4 w-4" />
+                Pasang Aplikasi
+              </Button>
+            )}
+          </div>
+
+          {/* Tombol perbarui hanya muncul saat versi baru benar-benar siap. */}
+          {updateReady && (
+            <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-muted-foreground">
+                Versi baru tersedia. Perbarui untuk memakai versi terkini.
+              </p>
+              <Button type="button" onClick={applyUpdate} loading={updating} className="sm:w-auto">
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Perbarui Aplikasi
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>

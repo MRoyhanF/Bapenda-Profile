@@ -38,6 +38,62 @@ export function useInstallApp() {
 }
 
 /**
+ * Deteksi versi baru aplikasi (service worker menunggu) + tombol terapkan.
+ *
+ * `sw.js` sengaja tidak memanggil skipWaiting(), jadi versi baru berhenti di
+ * state "waiting" sampai pengguna menekan Perbarui. Setelah diaktifkan,
+ * `controllerchange` memicu reload sekali supaya seluruh aset ikut versi baru.
+ */
+export function useAppUpdate() {
+  const [waiting, setWaiting] = useState<ServiceWorker | null>(null);
+  const [updating, setUpdating] = useState(false);
+
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+
+    let reloading = false;
+    function onControllerChange() {
+      // Guard: controllerchange bisa terpanggil lebih dari sekali.
+      if (reloading) return;
+      reloading = true;
+      window.location.reload();
+    }
+    navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
+
+    let reg: ServiceWorkerRegistration | undefined;
+    function track(r: ServiceWorkerRegistration) {
+      reg = r;
+      if (r.waiting) setWaiting(r.waiting);
+      r.addEventListener("updatefound", () => {
+        const sw = r.installing;
+        if (!sw) return;
+        sw.addEventListener("statechange", () => {
+          // installed + ada controller = versi baru siap menggantikan yang lama.
+          if (sw.state === "installed" && navigator.serviceWorker.controller) setWaiting(sw);
+        });
+      });
+    }
+
+    navigator.serviceWorker.getRegistration().then((r) => r && track(r));
+    // Cek berkala supaya update tetap terdeteksi di sesi yang lama terbuka.
+    const timer = setInterval(() => reg?.update().catch(() => {}), 60 * 60 * 1000);
+
+    return () => {
+      navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
+      clearInterval(timer);
+    };
+  }, []);
+
+  function applyUpdate() {
+    if (!waiting) return;
+    setUpdating(true);
+    waiting.postMessage({ type: "SKIP_WAITING" });
+  }
+
+  return { updateReady: !!waiting, updating, applyUpdate };
+}
+
+/**
  * Daftarkan service worker + tawarkan install (Android/Chrome) dan
  * tampilkan banner saat offline. Hanya dipasang di area /seloko.
  */
@@ -49,9 +105,15 @@ export function PwaProvider() {
 
   useEffect(() => {
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(() => {
-        // SW opsional: Seloko tetap jalan penuh tanpa dukungan offline.
-      });
+      navigator.serviceWorker.register("/sw.js").then(
+        (r) => {
+          // Paksa cek versi baru tiap kali app-shell dimuat.
+          r.update().catch(() => {});
+        },
+        () => {
+          // SW opsional: Seloko tetap jalan penuh tanpa dukungan offline.
+        }
+      );
     }
 
     setDismissed(localStorage.getItem(DISMISS_KEY) === "1");
